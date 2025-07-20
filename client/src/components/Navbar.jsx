@@ -80,7 +80,7 @@ function Navbar() {
             Login
           </button>
         ) : (
-          <UserButton>
+          <UserButton data-testid="user-button">
             <UserButton.MenuItems>
               <UserButton.Action
                 label="My Bookings"

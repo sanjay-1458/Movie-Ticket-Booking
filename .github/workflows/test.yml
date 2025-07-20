@@ -26,3 +26,12 @@ jobs:
       - name: Run Jest tests
         working-directory: ./client
         run: npm test -- --watchAll=false --coverage
+
+      - name: Post test summary
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "::notice title=Tests Passed::All unit tests passed"
+          else
+            echo "::error title=Tests Failed::Some unit tests failed"
+          fi

@@ -1,4 +1,5 @@
-// client/src/__tests__/TrailersSection.test.jsx
+/* eslint-env jest */
+
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
