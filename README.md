@@ -1,4 +1,5 @@
-![Test](https://github.com/sanjay-1458/Movie-Ticket-Booking/actions/workflows/React%20Unit%20Tests.yml/badge.svg)
+![Test](https://github.com/sanjay-1458/Movie-Ticket-Booking/actions/workflows/test.yml/badge.svg)
+
 
 # Overview
 
