@@ -1,8 +1,9 @@
+![Test](https://github.com/sanjay-1458/Movie-Ticket-Booking/actions/workflows/React%20Unit%20Tests.yml/badge.svg)
+
 # Overview
 
 Additonal to th ticket booking functionality, it runs unit test cases on the important components like `Trailers` to verify that video is being played with the expected source, and `Navbar` for Clerk authentications.
 
-![Test](https://github.com/sanjay-1458/Movie-Ticket-Booking/actions/workflows/react-unit-tests.yml/badge.svg)
 
 
 ## Client
