@@ -1,4 +1,4 @@
-name: React Unit Tests
+name: Tests
 
 on:
   push:
@@ -8,6 +8,9 @@ on:
 
 jobs:
   test:
+    
+    name: React Unit Tests
+
     runs-on: ubuntu-latest
 
     steps:
