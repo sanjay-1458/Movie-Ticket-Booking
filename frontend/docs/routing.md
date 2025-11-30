@@ -97,8 +97,19 @@ Usage: NavBar is not displayed for Admin
 
 Case:
 
-1. <a href="/movies"> → reloads the whole page (full browser reload)
+1. "<a href="/movies">" → reloads the whole page (full browser reload)
 
-2. <Link to="/movies"> → changes the URL and renders the new component without reloading (client-side routing)
+2. "<Link to="/movies">" → changes the URL and renders the new component without reloading (client-side routing)
 
 `<Link to="/">Home</Link>`
+
+## useNaviagte()
+
+With `useNavigate`, you can move the user to another route programmatically, such as after clicking a button, submitting a form, or running some logic.
+
+```
+const handleLogin = () => {
+   // do login logic...
+   navigate("/dashboard"); // redirect after login
+};
+```
