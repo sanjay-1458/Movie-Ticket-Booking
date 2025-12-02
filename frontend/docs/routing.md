@@ -93,13 +93,13 @@ Usage: NavBar is not displayed for Admin
 
 ## Link
 
-<Link> is React Router’s replacement for <a> tags when navigating inside a React app.
+`<Link>` is React Router’s replacement for `<a>` tags when navigating inside a React app.
 
 Case:
 
-1. "<a href="/movies">" → reloads the whole page (full browser reload)
+1. `<a href = "/movies"></a>` → reloads the whole page (full browser reload)
 
-2. "<Link to="/movies">" → changes the URL and renders the new component without reloading (client-side routing)
+2. `<Link to="/movies">` → changes the URL and renders the new component without reloading (client-side routing)
 
 `<Link to="/">Home</Link>`
 

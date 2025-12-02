@@ -1,5 +1,5 @@
 import React from "react";
-import NavBar from "./components/NavBar.tsx";
+import NavBar from "./components/NavBar/NavBar.tsx";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Movies from "./pages/Movies";
@@ -15,7 +15,7 @@ function App() {
 
   return (
     <>
-      <Toaster/>
+      <Toaster />
       {!isAdminRoute && <NavBar />}
       <Routes>
         <Route path="/" element={<Home />} />

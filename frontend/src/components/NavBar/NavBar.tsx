@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { assets } from "../assets/assets.ts";
+import { assets } from "../../assets/assets.ts";
 import { BookAIcon, MenuIcon, SearchIcon, XIcon } from "lucide-react";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
 
