@@ -4,7 +4,7 @@
 
 It listen to the brwser URL, and based on the path it renders the correct component. It also uses the HTML5 history API so that we can move forward, backward in the application, and with no full page refresh.
 
-```
+``` js
 <BrowserRouter>
     <App />
 </BrowserRouter>
@@ -19,13 +19,13 @@ Without <Routes>, <Route> tags won’t work.
 
 <Route> tag tells the browsers when we are at a certain URL render this particular component.
 
-```
+``` js
 <Route path = "/" element = {<Home/>}>
 ```
 
 If URL is "/" than render "Home" component.
 
-```
+``` js
 "/movies/avengers"
 "/movies/prometheus"
 ```
@@ -36,12 +36,12 @@ Anything that starts with a colon (:) is a URL parameter.
 
 We can further extends the movie with seclected movie than date:
 
-```
+``` js
 /movies/5/2024-02-01
 /movies/10/2024-03-03
 ```
 
-```
+``` js
 <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/movies" element={<Movies />} />
@@ -70,7 +70,7 @@ It is another react hook but instead of just fetching the dynamic parametrs, it 
 
 useLocation() returns an object that describes the current URL.
 
-```
+``` js
 {
   pathname: "/movies/12",
   search: "?date=2024-02-01",
@@ -81,13 +81,13 @@ useLocation() returns an object that describes the current URL.
 
 It can be used to check whether we are at "/admin" or not.
 
-```
+``` js
 const isAdminRoute = useLocation().pathname.startsWith("/admin");
 ```
 
 Usage: NavBar is not displayed for Admin
 
-```
+``` js
 {!isAdminRoute && <NavBar />}
 ```
 
@@ -107,7 +107,7 @@ Case:
 
 With `useNavigate`, you can move the user to another route programmatically, such as after clicking a button, submitting a form, or running some logic.
 
-```
+``` js
 const handleLogin = () => {
    // do login logic...
    navigate("/dashboard"); // redirect after login
