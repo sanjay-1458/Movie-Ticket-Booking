@@ -57,3 +57,15 @@ Doing `bg-[###]` evrytime can cause bug, so a custom css property is used using 
 ```
 
 Now it can be used as `bg-primary text-secondary`
+
+## Testing
+
+Tools used: `Vitest` + `React Testing Library`.
+
+- Vitest:
+  Vitest is a test runner and assertion libraray.
+  A tool that runs your tests, checks expectations, and mocks modules.
+
+- RTL:
+  React Testing Library is a UI testing utility for React components.
+  A library that helps you test React components, focusing on how users interact with them.

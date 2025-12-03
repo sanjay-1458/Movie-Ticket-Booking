@@ -5,7 +5,7 @@ import { BookAIcon, MenuIcon, SearchIcon, XIcon } from "lucide-react";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
 
 function NavBar() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   const { user } = useUser();
