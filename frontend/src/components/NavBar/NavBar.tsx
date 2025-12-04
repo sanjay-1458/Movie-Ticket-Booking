@@ -57,7 +57,7 @@ function NavBar() {
           Movies
         </Link>
         <Link
-          to="/"
+          to="/theatres"
           onClick={() => {
             scrollTo(0, 0);
             setIsOpen(false);
@@ -66,7 +66,7 @@ function NavBar() {
           Theatres
         </Link>
         <Link
-          to="/"
+          to="/releases"
           onClick={() => {
             scrollTo(0, 0);
             setIsOpen(false);
@@ -75,7 +75,7 @@ function NavBar() {
           Releases
         </Link>
         <Link
-          to="/Favorites"
+          to="/favorite"
           onClick={() => {
             scrollTo(0, 0);
             setIsOpen(false);
