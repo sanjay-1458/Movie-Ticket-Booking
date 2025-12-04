@@ -74,5 +74,15 @@ Here on hovering on `div` the para changes to their respective color.
 
 To remove parent hover when we hover on an element use: `group-hover:not-hover` so that the parent hover is ignored on the hovered element.
 
-<img src="../../frontend/public/trailer-hover.png" alt="Clerk Preview" height="80">
+<img src="../../frontend/public/trailer-hover.png" alt="Clerk Preview" height="90">
 
+## Movie Details Page
+
+Based on the params from the URL, `/movies/:id`, the `{id}` is captured and based on the id, the data is rendered. This component contains `Watch Trailer`, `Add to Favorite`, `Buying Ticket Option` with `Casts` and other movie deatails.
+
+<img src="../../frontend/public/movie-details.png" alt="Clerk Preview" width="300">
+
+When user pick a date and books ticket, they are naviagted to seat-selection page for further process.
+This making URL : `"/movies/:id/:date"`
+
+<img src="../../frontend/public/movie-booking-naviagtion.png" alt="Clerk Preview" width="200">

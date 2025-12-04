@@ -6,9 +6,9 @@ This section of the project contains all the documentation you need to understan
 
 ## 📘 Documentation Overview
 
-### 🔹 UI
+### 🔹 MISC
 
-**File:** `ui.md` [Link](ui.md)<br>
+**File:** `ui.md` [Link](misc.md)<br>
 This document covers all the UI used apart from components.
 
 ---
@@ -38,13 +38,6 @@ This conatins how navigation works inside the app. It includes the route hierarc
 
 **File:** `components.md` [Link](components.md)<br>
 This contains all the component used in the application with their usage.
-
----
-
-### 🔹 Notification
-
-**File:** `notification.md` [Link](notification.md)<br>
-Everything related to the global notification system it trigger messages, the different notification types, and styling.
 
 ---
 
