@@ -119,3 +119,11 @@ On hovering parent only and no child, every child get their `opacity-50`.
 When a child if hovered we don't apply the `opacity-50` property.
 
 <img src="../../frontend/public/trailer-hover.png" alt="Clerk Preview" height="80">
+
+## Showing Casts Horizontally
+
+Using Tailwind CSS class of:
+1. `overflow-x-auto`: We can scroll horizontally, it is usefull for showing casts, while staying at same viewport.
+2. `scrollbar-width: none;`: This CSS property is used for hiding the scroll bar.
+
+<img src="../../frontend/public/cast-linear.png" alt="Clerk Preview" height="80">

@@ -6,9 +6,9 @@ This section of the project contains all the documentation you need to understan
 
 ## Documentation Overview
 
-### 🔹 UI
+### 🔹 MISC
 
-**File:** `docs/ui.md` [Link](docs/ui.md)<br>
+**File:** `docs/ui.md` [Link](docs/misc.md)<br>
 This document covers all the UI used apart from components.
 
 ---
@@ -24,13 +24,6 @@ This conatins the page-level structures: how pages are organized, how layouts wo
 
 **File:** `docs/clerk-account-handler.md` [Link](docs/clerk-account-handler.md)<br>
 How clerk is used for login / sign-in.
-
----
-
-### 🔹 Routing
-
-**File:** `docs/routing.md` [Link](docs/routing.md)<br>
-This conatins how navigation works inside the app. It includes the route hierarchy, dynamic routes, protected routes, and various types of naviagtion used.
 
 ---
 
@@ -109,45 +102,49 @@ You will get a message that process is terminated, and to verify it again check 
 
 #### Explanation:
 
-1. `netstat`:
-It shows all active network connections on your computer
-The output conatins:
+1.  `netstat`:
+    It shows all active network connections on your computer
+    The output conatins:
 
-    - Proto:
-Which shows the protocol used for the connection like TCP.
+        - Proto:
 
-    - Local Address
-Your computer IP address and port number used for connection
+    Which shows the protocol used for the connection like TCP.
 
-    - Foreign Address
-The remote computer or server our computer connects to, along with the port number.
+        - Local Address
 
-    - State
-It shows the staus of the connection, like "ESTABLISHED" when connection is active and data can be sent / received, "LISTENING" where a port on the computer is waiting for the incoming connections.
+    Your computer IP address and port number used for connection
 
-    `TCP [LOCAL_IP]:[LOCAL_PORT] [REMOTE_IP]:https ESTABLISHED`
+        - Foreign Address
 
-2. `netstat -a`:
-It shows all active connection and listening ports.
-Shows active TCP connections only.
-Provides: Protocol, Local Address, Foreign Address, State.
+    The remote computer or server our computer connects to, along with the port number.
 
-3. `netstat -n`:
-It shows addresses and port number numerically.
-Shows connections numerically (IP addresses and port numbers) instead of resolving hostnames and services.
-Using "-n": ":https" -> ":443"
+        - State
 
-4. `netstat -o`:
-Shows process ID (PID) of each process.
+    It shows the staus of the connection, like "ESTABLISHED" when connection is active and data can be sent / received, "LISTENING" where a port on the computer is waiting for the incoming connections.
 
-5. `| findstr :5173`
-Filter the ouput to give the data only for port "5173".
+        `TCP [LOCAL_IP]:[LOCAL_PORT] [REMOTE_IP]:https ESTABLISHED`
 
-6. `taskkill`:
-Command to terminate a process.
+2.  `netstat -a`:
+    It shows all active connection and listening ports.
+    Shows active TCP connections only.
+    Provides: Protocol, Local Address, Foreign Address, State.
 
-7. `/PID {PID}`:
-Specifies which process we want to kill.
+3.  `netstat -n`:
+    It shows addresses and port number numerically.
+    Shows connections numerically (IP addresses and port numbers) instead of resolving hostnames and services.
+    Using "-n": ":https" -> ":443"
 
-8. `/F`:
-Forces the process to terminate. Without `/F` the process might not terminate.
+4.  `netstat -o`:
+    Shows process ID (PID) of each process.
+
+5.  `| findstr :5173`
+    Filter the ouput to give the data only for port "5173".
+
+6.  `taskkill`:
+    Command to terminate a process.
+
+7.  `/PID {PID}`:
+    Specifies which process we want to kill.
+
+8.  `/F`:
+    Forces the process to terminate. Without `/F` the process might not terminate.
