@@ -127,3 +127,7 @@ Using Tailwind CSS class of:
 2. `scrollbar-width: none;`: This CSS property is used for hiding the scroll bar.
 
 <img src="../../frontend/public/cast-linear.png" alt="Clerk Preview" height="80">
+
+## Admin
+
+Admin pages are implemented using nested routing + `<Outlet/>`, so we can change the middle UI part while keeping the same left side-bar for accesing multiple sections of Admin.

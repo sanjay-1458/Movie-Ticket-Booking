@@ -8,7 +8,7 @@ import type { Movie } from './MovieDetails';
 
 export type BookingData = {
   show:{
-    showDateTime:string,
+    showDateTime:string, 
     movie:Movie
   },
   amount:number,

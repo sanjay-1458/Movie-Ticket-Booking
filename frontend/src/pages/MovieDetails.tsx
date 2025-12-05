@@ -12,8 +12,10 @@ import Loading from "../components/Loading";
 export type Movie = {
   poster_path: string;
   title: string;
+  vote_count:number;
   vote_average: number;
   overview: string;
+  id:number;
   runtime: number;
   genres: { id: number; name: string }[];
   release_date: string;

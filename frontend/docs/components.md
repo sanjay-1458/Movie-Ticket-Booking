@@ -93,3 +93,7 @@ This making URL : `"/movies/:id/:date"`
 The seat layout is designed with unqiue row + col, and its data is stored in the state for interaction with database.
 
 <img src="../../frontend/public/seat-layout.png" alt="Clerk Preview" width="210">
+
+## Admin Control
+
+Admin dashboard can be formed using `<Outlet/>` and nested routing as all the endpoints starts from `"/admin"`

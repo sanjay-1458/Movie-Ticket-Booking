@@ -113,3 +113,32 @@ const handleLogin = () => {
    navigate("/dashboard"); // redirect after login
 };
 ```
+
+## Admin
+
+Whenever the URL starts with `"/admin"`, the `Layout` component ini rendered, it contains a left-side bar from which admin can navigate, and we have nested routes where by default we render the `Dashboard` component, and on clicking to other sections, the dahboard area is replaced with others.
+
+``` js
+<Routes>
+  <Route path="/admin/*" element={<Layout/>}>
+     <Route index element={<Dashboard/>}/>
+     <Route path="add-shows" element={<AddShows/>}/>
+     <Route path="list-bookings" element={<ListBookings/>}/>
+     <Routes path="list-shows"element={<ListShows/>}/>
+  </Route>
+</Routes>
+```
+
+## NavLink
+
+NavLink is also used for nagivation similar to `Link`, bute here we can highlight the link component which is active, using.
+
+It detects whether the target route matches the URL and applices styling.
+It can be used when we can see multiple options and each option leads to different routing.
+
+``` js
+<NavLink
+  to="/about"
+  className={({ isActive }) => (isActive ? "active" : "")}
+>
+```
