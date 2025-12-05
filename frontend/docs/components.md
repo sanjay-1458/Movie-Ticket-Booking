@@ -86,3 +86,10 @@ When user pick a date and books ticket, they are naviagted to seat-selection pag
 This making URL : `"/movies/:id/:date"`
 
 <img src="../../frontend/public/movie-booking-naviagtion.png" alt="Clerk Preview" width="200">
+
+
+## Seat Layout
+
+The seat layout is designed with unqiue row + col, and its data is stored in the state for interaction with database.
+
+<img src="../../frontend/public/seat-layout.png" alt="Clerk Preview" width="210">
