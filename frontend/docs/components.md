@@ -93,3 +93,25 @@ This making URL : `"/movies/:id/:date"`
 The seat layout is designed with unqiue row + col, and its data is stored in the state for interaction with database.
 
 <img src="../../frontend/public/seat-layout.png" alt="Clerk Preview" width="210">
+
+## Admin Control
+
+Admin dashboard can be formed using `<Outlet/>` and nested routing as all the endpoints starts from `"/admin"`
+
+## Add Shows
+
+With this section, admin can add shows for multiple date and time, the data for `Now Playing Movies` will come from API call to backend, and stored in a state variable.
+
+Here, admin can set price, select a date, and check the selcted date list for all movies, using controlled input.
+
+``` js
+const [selectedMovie, setSelectedMovie] = useState<number>(0);
+
+const [dateTimeSelection, setDateTimeSelection] = useState<Record<string, string[]>>({});
+
+const [dateTimeInput, setDateTimeInput] = useState("");
+
+const [showPrice, setShowPrice] = useState("");
+```
+
+<img src="../../frontend/public/new-movies.png" alt="Clerk Preview" width="210">

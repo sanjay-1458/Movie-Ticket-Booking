@@ -1,4 +1,4 @@
-import React from 'react'
+
 import {assets} from '../../assets/assets'
 import { ArrowRightIcon, Calendar, Clock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'

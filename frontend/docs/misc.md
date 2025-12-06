@@ -11,3 +11,12 @@ if (!selectedDate) {
   return toast("Please select a date");
 }
 ```
+## Testing
+
+Each components / pages have their own test file. Test are wriiten in `Vitest` & `React-Testing-Library`.
+
+## Types
+
+The types of the data we recieved from API call are stored in `types` folder, where we can export the types and used in their respective component.
+
+`../src/types/` [Link](../src/types/)

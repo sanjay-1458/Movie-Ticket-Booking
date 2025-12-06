@@ -19,3 +19,25 @@ body {
 .no-scrollbar{
   scrollbar-width: none;
 }
+
+.inactive-link .indicator{
+  background-color: transparent;
+}
+.active-link .indicator{
+  background-color: #f84565;
+}
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);        
+}
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button{
+  appearance: none;
+  -webkit-appearance: none;
+}
+input[type="number"] {
+  appearance: textfield; 
+  -moz-appearance: textfield;
+}

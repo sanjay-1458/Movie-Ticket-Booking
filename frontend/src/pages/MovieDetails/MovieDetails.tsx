@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { dummyDateTimeData, dummyShowsData } from "../assets/assets";
-import BlurCircle from "../components/BlurCircle";
-import { Heart, PlayCircle, PlayIcon, StarIcon } from "lucide-react";
-import timeFormat from "../lib/timeFormat";
-import DateSelect from "../components/DateSelect";
-import MovieCard from "../components/MovieCard";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { dummyDateTimeData, dummyShowsData } from "../../assets/assets";
+import BlurCircle from "../../components/BlurCircle/BlurCircle";
+import { Heart, PlayCircle, StarIcon } from "lucide-react";
+import timeFormat from "../../lib/timeFormat";
+import DateSelect from "../../components/DateSelect/DateSelect";
+import MovieCard from "../../components/MovieCard/MovieCard";
 import { useNavigate } from "react-router-dom";
-import Loading from "../components/Loading";
+import Loading from "../../components/Loading/Loading";
 
 export type Movie = {
   poster_path: string;
   title: string;
+  vote_count: number;
   vote_average: number;
   overview: string;
+  id: number;
   runtime: number;
   genres: { id: number; name: string }[];
   release_date: string;
@@ -25,21 +27,22 @@ export type DateTime = Record<string, { time: string; showId: string }[]>;
 
 function MovieDetails() {
   const { id } = useParams();
-  const [show, setShow] = useState<{ movie: Movie; dateTime: DateTime } | null>(null);
+  const [show, setShow] = useState<{ movie: Movie; dateTime: DateTime } | null>(
+    null
+  );
   const navigate = useNavigate();
 
-  const getShow = async () => {
-    const currShow = dummyShowsData.find((movie) => movie._id === id);
-
-    if (currShow) {
-      setShow({
-        movie: currShow,
-        dateTime: dummyDateTimeData,
-      });
-    }
-  };
-
   useEffect(() => {
+    const getShow = async () => {
+      const currShow = dummyShowsData.find((movie) => movie._id === id);
+
+      if (currShow) {
+        setShow({
+          movie: currShow,
+          dateTime: dummyDateTimeData,
+        });
+      }
+    };
     getShow();
   }, [id]);
   return show ? (
