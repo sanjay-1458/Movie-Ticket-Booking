@@ -24,11 +24,11 @@ It uses:
 
 The documentation for FrontEnd and BackEnd like `Product Design`, `API Documentation`, `Routing`, etc. can be found in their respective section, or you can just see below for the respective documentation.
 
-<a href="/frontend/docs/" style="text-decoration:none;">
+<a href="/frontend/README.md" style="text-decoration:none;">
   <img src="https://img.shields.io/badge/Frontend-Docs-1f6fe0?style=for-the-badge">
 </a>
-
-<a href="/backend/docs/" style="text-decoration:none;">
+<br>
+<a href="/backend/README.md/" style="text-decoration:none;">
   <img src="https://img.shields.io/badge/Backend-Docs-1f6fe0?style=for-the-badge">
 </a>
 
@@ -186,7 +186,6 @@ You will get a message that process is terminated, and to verify it again check 
 
 8.  `/F`:
     Forces the process to terminate. Without `/F` the process might not terminate.
-
 
 <a href="https://greatstack.dev/p/quickshow" style="text-decoration:none;">
   <img src="https://img.shields.io/badge/Credits-GreatStack-ff6f61?style=for-the-badge">
