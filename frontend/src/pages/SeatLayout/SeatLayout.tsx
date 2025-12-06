@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { assets, dummyDateTimeData, dummyShowsData } from "../assets/assets";
-import type { DateTime, Movie } from "./MovieDetails";
-import Loading from "../components/Loading";
+import { assets, dummyDateTimeData, dummyShowsData } from "../../assets/assets";
+import type { DateTime, Movie } from "../MovieDetails/MovieDetails";
+import Loading from "../../components/Loading/Loading";
 import { ArrowRight, Clock } from "lucide-react";
-import ISOTimeFormat from "../lib/ISOTimeFormat";
-import BlurCircle from "../components/BlurCircle";
+import ISOTimeFormat from "../../lib/ISOTimeFormat";
+import BlurCircle from "../../components/BlurCircle/BlurCircle";
 import toast from "react-hot-toast";
 
 function SeatLayout() {
@@ -31,17 +31,6 @@ function SeatLayout() {
     ["G", "H"],
     ["I", "J"],
   ];
-
-  const getShow = async () => {
-    const currShow = dummyShowsData.find((movie) => movie._id === id);
-
-    if (currShow) {
-      setShow({
-        movie: currShow,
-        dateTime: dummyDateTimeData,
-      });
-    }
-  };
 
   const handleSeatClick = (seatId: string) => {
     if (!selectedTime) {
@@ -84,8 +73,18 @@ function SeatLayout() {
     );
   };
   useEffect(() => {
+    const getShow = async () => {
+      const currShow = dummyShowsData.find((movie) => movie._id === id);
+
+      if (currShow) {
+        setShow({
+          movie: currShow,
+          dateTime: dummyDateTimeData,
+        });
+      }
+    };
     getShow();
-  }, []);
+  }, [id]);
 
   if (!id || !date) {
     return <Loading />;
@@ -141,24 +140,23 @@ function SeatLayout() {
           <div className="grid grid-cols-2 gap-6">
             {groupRows.slice(1).map((group, ind) => {
               return (
-                <div key={ind}>{group.map((row) => renderSeats(row,6))}</div>
+                <div key={ind}>{group.map((row) => renderSeats(row, 6))}</div>
               );
             })}
           </div>
         </div>
 
         <button
-        onClick={()=>{
-          navigate("/my-bookings")
-        }}
-        className="flex items-center gap-1 mt-20 px-10 py-3 text-sm bg-primary hover:bg-primary/70
-        hover:-translate-y-1 transition rounded-full font-medium cursor-pointer active:scale-95">
+          onClick={() => {
+            navigate("/my-bookings");
+          }}
+          className="flex items-center gap-1 mt-20 px-10 py-3 text-sm bg-primary hover:bg-primary/70
+        hover:-translate-y-1 transition rounded-full font-medium cursor-pointer active:scale-95"
+        >
           Proceed to checkout
-          <ArrowRight  className="w-4 h-4" strokeWidth={3}/>
+          <ArrowRight className="w-4 h-4" strokeWidth={3} />
         </button>
       </div>
-
-
     </div>
   ) : (
     <Loading />

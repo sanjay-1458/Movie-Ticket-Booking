@@ -131,3 +131,55 @@ Using Tailwind CSS class of:
 ## Admin
 
 Admin pages are implemented using nested routing + `<Outlet/>`, so we can change the middle UI part while keeping the same left side-bar for accesing multiple sections of Admin.
+
+## Adding Shows
+
+The admin can add shows using by storing the data in state variable, such that it can se used in HTTP request.
+
+``` js
+const [selectedMovie, setSelectedMovie] = useState<number>(0);
+
+const [dateTimeSelection, setDateTimeSelection] = useState<Record<string, string[]>>({});
+
+const [dateTimeInput, setDateTimeInput] = useState("");
+
+const [showPrice, setShowPrice] = useState("");
+```
+
+Admin cannot store same data as each record is in format:
+``` js
+{
+  "date1":["time1","time2"]
+}
+```
+And using filter property we can remove redundancy.
+
+Store the extracted value in a variable named _, but we don’t plan to use it.
+
+We only show the selected date section only if it has atleast 1 element, to do this we extract that date and return the remaining using desctructing previous state.
+``` js
+ _.value = prev[date]; const {[date]:_,...rest} =prev;
+```
+``` js
+if (filteredTimes.length === 0) {
+  const { [date]: _, ...rest } = prev;
+  return rest;
+} else {
+  return {
+    ...prev,
+    [date]: filteredTimes,
+  };
+}
+```
+<img src="../../frontend/public/new-movies.png" alt="Clerk Preview" width="210">
+
+Showing the selcedt date-time section only when there is something in the state.
+
+<img src="../../frontend/public/new-movie-list.png" alt="Clerk Preview" width="210">
+
+Using `group` and `group-hover:not-hover:{some-property}`.
+We can make other movie cards dull and highlight the current movie.
+
+It works by, when we add a `group` class to parent and `group-hover` to child, than on hvering parent every child `group-hover` is activated, but if we want only the current card should not be affected than we use `not-hover`, thus when we hover a current card, every other card get `{some-property}` from `group-hover:not-hover:{some-property}` except the current one.
+
+<img src="../../frontend/public/movie-group.png" alt="Clerk Preview" width="210">

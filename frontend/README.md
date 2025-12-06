@@ -59,7 +59,7 @@ This contains what the product is supposed to do, how user interacts and feature
 
 1. Go to the project directory
 
-```
+``` js
 cd ".\frontend"
 ```
 
@@ -67,13 +67,13 @@ To be in the `frontend` repo.
 
 2. Install dependencies
 
-```
+``` js
 npm install
 ```
 
 3. Run the application
 
-```
+``` js
 npm run dev
 ```
 
@@ -86,13 +86,13 @@ If your port is already in use it will run at port `5174` but if you want to fre
 
 1. Find the process using specific port:
 
-```
+``` js
 netstat -ano | findstr :5173
 ```
 
 2. Terminate the process:
 
-```
+``` js
 taskkill /PID 1245 /F
 ```
 

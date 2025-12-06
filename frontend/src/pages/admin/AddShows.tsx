@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { dummyShowsData } from "../../assets/assets";
-import type { Movie } from "../MovieDetails";
-import Loading from "../../components/Loading";
+import type { Movie } from "../MovieDetails/MovieDetails";
+import Loading from "../../components/Loading/Loading";
 import Title from "./Title";
-import { Calendar, CheckIcon, DeleteIcon, StarIcon } from "lucide-react";
-import BlurCircle from "../../components/BlurCircle";
+import { CheckIcon, DeleteIcon, StarIcon } from "lucide-react";
+import BlurCircle from "../../components/BlurCircle/BlurCircle";
 import kConvertor from "../../lib/kConvertor";
-
-type DateTime = {};
+import toast from "react-hot-toast";
 
 function AddShows() {
   const currency = import.meta.env.VITE_CURRENCY;
@@ -24,9 +23,17 @@ function AddShows() {
   const [showPrice, setShowPrice] = useState("");
 
   const handleDateTimeAdd = () => {
-    if (!dateTimeInput) return;
+    if (!selectedMovie) {
+      return toast("Please Select a Movie");
+    }
+
     const [date, time] = dateTimeInput.split("T");
-    if (!date || !time) return;
+    if (!date) {
+      return toast("Please Select a Date");
+    }
+    if (!time) {
+      return toast("Please Select a Time");
+    }
 
     setDateTimeSelection((prev) => {
       const times = prev[date] || [];
@@ -38,13 +45,13 @@ function AddShows() {
     });
   };
 
-  // Store the extracted value in a variable named _, but we don’t plan to use it. _.value = prev[date]; const {[date]:_,...rest} =prev;
   const handleDateTimeRemove = (date: string, time: string) => {
     setDateTimeSelection((prev) => {
       const filteredTimes = (prev[date] ?? []).filter((t) => t !== time);
 
       if (filteredTimes.length === 0) {
-        const { [date]: _, ...rest } = prev;
+        const rest = { ...prev };
+        delete rest[date];
         return rest;
       } else {
         return {
@@ -54,11 +61,11 @@ function AddShows() {
       }
     });
   };
-  const fetchNowPlayingMovies = async () => {
-    setNowPlayingMovies(dummyShowsData);
-  };
 
   useEffect(() => {
+    const fetchNowPlayingMovies = async () => {
+      setNowPlayingMovies(dummyShowsData);
+    };
     fetchNowPlayingMovies();
   }, []);
 
@@ -164,17 +171,22 @@ function AddShows() {
       </div>
 
       {Object.keys(dateTimeSelection).length > 0 && (
-        <div>
-          <h2>Selected Date-Time</h2>
-          <ul>
+        <div className="mt-6">
+          <h2 className="mb-2">Selected Date-Time</h2>
+          <ul className="space-y-3">
             {Object.entries(dateTimeSelection).map(([date, times]) => (
               <li key={date}>
-                <div>{date}</div>
-                <div>
+                <div className="font-medium">{date}</div>
+                <div className="flex flex-wrap gap-2 mt-1 text-sm">
                   {times.map((time) => (
-                    <div key={time}>
+                    <div
+                      key={time}
+                      className="flex border rounded items-center px-2 py-1 border-primary"
+                    >
                       <span>{time}</span>
                       <DeleteIcon
+                        className="ml-2 text-red-500 hover:text-red-700 cursor-pointer"
+                        width={15}
                         onClick={() => {
                           handleDateTimeRemove(date, time);
                         }}
@@ -187,6 +199,9 @@ function AddShows() {
           </ul>
         </div>
       )}
+      <button className="bg-primary text-white px-8 py-2 mt-6 rounded hover:bg-primary/90 transition-all cursor-pointer">
+        Add Show
+      </button>
     </>
   ) : (
     <Loading />

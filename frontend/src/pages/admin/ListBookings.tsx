@@ -1,26 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { dummyBookingData } from "../../assets/assets";
-import type { Movie } from "../MovieDetails";
 import type { ListShowsDataType } from "./ListShows";
-import Loading from "../../components/Loading";
+import Loading from "../../components/Loading/Loading";
 import Title from "./Title";
-import BlurCircle from "../../components/BlurCircle";
+import BlurCircle from "../../components/BlurCircle/BlurCircle";
 import dateFormat from "../../lib/dateFormat";
-
-// export type ListBookingsType={
-//   _id:string;
-//   user:Record<string,string>;
-//   show:{
-//     _id:string;
-//     movie:Movie;
-//     showDateTime:string;
-//     showPrice:number;
-//   };
-//   amount:number;
-//   bookedSeats:string[];
-//   isPaid:boolean
-
-// }
 
 export type ListBookingsType = {
   _id: string;
@@ -37,12 +21,11 @@ function ListBookings() {
   const [bookings, setBookings] = useState<ListBookingsType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const getAllBookings = async () => {
-    setBookings(dummyBookingData);
-    setIsLoading(false);
-  };
-
   useEffect(() => {
+    const getAllBookings = async () => {
+      setBookings(dummyBookingData);
+      setIsLoading(false);
+    };
     getAllBookings();
   }, []);
 
@@ -50,10 +33,12 @@ function ListBookings() {
     <>
       <Title text1="List" text2="Bookings" />
       <div className="relative">
-        <BlurCircle top = "-10px" left="40px"/>
+        <BlurCircle top="-10px" left="40px" />
       </div>
-      <div className="max-w-4xl mt-6 overflow-x-auto
-      no-scrollbar">
+      <div
+        className="max-w-4xl mt-6 overflow-x-auto
+      no-scrollbar"
+      >
         <table className="w-full border-collapse rounded-md overflow-hidden text-nowrap ">
           <thead>
             <tr className="bg-primary/20 text-left text-white">
@@ -68,14 +53,12 @@ function ListBookings() {
           <tbody className="text-sm font-light">
             {bookings.map((data, index) => {
               return (
-                <tr key={index}
-                className="border-b border-primary/20"
-                >
+                <tr key={index} className="border-b border-primary/20">
                   <td className="p-2 min-w-45 pl-5">{data.user.name}</td>
                   <td className="p-2">{data.show.movie.title}</td>
                   <td className="p-2">{dateFormat(data.show.showDateTime)}</td>
                   <td className="p-2">{data.bookedSeats.join(", ")}</td>
-                  <td className="p-2">{currency + (data.amount)}</td>
+                  <td className="p-2">{currency + data.amount}</td>
                 </tr>
               );
             })}

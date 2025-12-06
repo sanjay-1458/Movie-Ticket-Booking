@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import type { Movie } from "../MovieDetails";
+import { useEffect, useState } from "react";
+import type { Movie } from "../MovieDetails/MovieDetails";
 import {
   ChartLineIcon,
   CircleDollarSignIcon,
@@ -8,12 +8,10 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { dummyDashboardData } from "../../assets/assets";
-import Loading from "../../components/Loading";
+import Loading from "../../components/Loading/Loading";
 import Title from "./Title";
-import BlurCircle from "../../components/BlurCircle";
+import BlurCircle from "../../components/BlurCircle/BlurCircle";
 import dateFormat from "../../lib/dateFormat";
-import type { ListShowsDataType } from "./ListShows";
-
 
 export type DashboardDataType = {
   totalBookings: number;
@@ -58,11 +56,12 @@ function Dashboard() {
       icon: UsersIcon,
     },
   ];
-  const fetchDashboardData = async () => {
-    setDashboardData(dummyDashboardData);
-    setLoading(false);
-  };
+
   useEffect(() => {
+    const fetchDashboardData = async () => {
+      setDashboardData(dummyDashboardData);
+      setLoading(false);
+    };
     fetchDashboardData();
   }, []);
   return !loading ? (

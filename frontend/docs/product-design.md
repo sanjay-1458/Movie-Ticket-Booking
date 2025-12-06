@@ -58,6 +58,23 @@ Displays all past and current bookings for logged-in users.
 ### **Favorites**
 Stores bookmarked movies for quick access.
 
+
+### **Admin-Dashboard**
+
+Key metrics like total bookings, active shows, revenue summaries, and quick management shortcuts are displayed on the main admin landing page.
+
+### **Admin-Add Shows**
+
+Interface that allows the administrator to choose a movie, pick time and date slots, set pricing information in order to create new shows.
+
+### **Admin-List Bookings**
+
+Shows all user reservations with date, movie, showtime and seats booked.
+
+### **Admin-List Shows**
+
+Displays the full schedule of shows with timing, total bookings and earning. Helpful for monitoring per show sales.
+
 ---
 
 ## 5. Design
