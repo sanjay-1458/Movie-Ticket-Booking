@@ -1,3 +1,41 @@
+# Overview
+
+This is a `Movie-Ticket-Booking` application, where user can book tickets for specific movie, with their desired seats.
+The admin can set shows, view the booked seats also motior the earning of each movie.
+
+This project is written with `React`. `TypeScript`, `Node`, `Express`, `MongoDB`. Along with the unit test using `Vitest` & `React-Testing-Library`
+
+It uses:
+
+<table border>
+  <thead>
+    <tr>
+      <th>Service</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Clerk</td>
+      <td>User authentication</td>
+    </tr>
+  </tbody>
+</table>
+
+The documentation for FrontEnd and BackEnd like `Product Design`, `API Documentation`, `Routing`, etc. can be found in their respective section, or you can just see below for the respective documentation.
+
+<a href="/frontend/docs/" style="text-decoration:none;">
+  <img src="https://img.shields.io/badge/Frontend-Docs-1f6fe0?style=for-the-badge">
+</a>
+
+<a href="/backend/docs/" style="text-decoration:none;">
+  <img src="https://img.shields.io/badge/Backend-Docs-1f6fe0?style=for-the-badge">
+</a>
+
+---
+
+# Documenataion
+
 # Frontend Documentation
 
 This section of the project contains all the documentation you need to understand how the frontend is structured and how each part works including component, logic, routing, etc.
@@ -6,58 +44,51 @@ This section of the project contains all the documentation you need to understan
 
 ## Documentation Overview
 
-### 🔹 UI
+### 🔹 MISC
 
-**File:** `docs/ui.md` [Link](docs/ui.md)<br>
+**File:** `/frontend/docs/ui.md` [Link](/frontend/docs/misc.md)<br>
 This document covers all the UI used apart from components.
 
 ---
 
 ### 🔹 Pages
 
-**File:** `docs/pages.md` [Link](docs/pages.md)<br>
+**File:** `/frontend/docs/pages.md` [Link](/frontend/docs/pages.md)<br>
 This conatins the page-level structures: how pages are organized, how layouts work, and how each page ties into routing and the overall UI.
 
 ---
 
 ### 🔹 Clerk
 
-**File:** `docs/clerk-account-handler.md` [Link](docs/clerk-account-handler.md)<br>
+**File:** `/frontend/docs/clerk-account-handler.md` [Link](/frontend/docs/clerk-account-handler.md)<br>
 How clerk is used for login / sign-in.
-
----
-
-### 🔹 Routing
-
-**File:** `docs/routing.md` [Link](docs/routing.md)<br>
-This conatins how navigation works inside the app. It includes the route hierarchy, dynamic routes, protected routes, and various types of naviagtion used.
 
 ---
 
 ### 🔹 Components
 
-**File:** `docs/components.md` [Link](docs/components.md)<br>
+**File:** `/frontend/docs/components.md` [Link](/frontend/docs/components.md)<br>
 This contains all the component used in the application with their usage.
 
 ---
 
 ### 🔹 Notification
 
-**File:** `docs/notification.md` [Link](docs/notification.md)<br>
+**File:** `/frontend/docs/notification.md` [Link](/frontend/docs/notification.md)<br>
 Everything related to the global notification system it trigger messages, the different notification types, and styling.
 
 ---
 
 ### 🔹 Implementation
 
-**File:** `docs/implementation.md` [Link](docs/implementation.md)<br>
+**File:** `/frontend/docs/implementation.md` [Link](/frontend/docs/implementation.md)<br>
 This is the in-depth document of how the app interact among componet level and logic implementation. It walks through the internal logic, patterns, API handeling and overall architecture of the frontend.
 
 ---
 
 ### 🔹 Product Design
 
-**File:** `docs/product-design.md` [Link](docs/product-design.md)<br>
+**File:** `/frontend/docs/product-design.md` [Link](/frontend/docs/product-design.md)<br>
 This contains what the product is supposed to do, how user interacts and features available.
 
 ---
@@ -109,45 +140,56 @@ You will get a message that process is terminated, and to verify it again check 
 
 #### Explanation:
 
-1. `netstat`:
-It shows all active network connections on your computer
-The output conatins:
+1.  `netstat`:
+    It shows all active network connections on your computer
+    The output conatins:
 
-    - Proto:
-Which shows the protocol used for the connection like TCP.
+        - Proto:
 
-    - Local Address
-Your computer IP address and port number used for connection
+    Which shows the protocol used for the connection like TCP.
 
-    - Foreign Address
-The remote computer or server our computer connects to, along with the port number.
+        - Local Address
 
-    - State
-It shows the staus of the connection, like "ESTABLISHED" when connection is active and data can be sent / received, "LISTENING" where a port on the computer is waiting for the incoming connections.
+    Your computer IP address and port number used for connection
 
-    `TCP [LOCAL_IP]:[LOCAL_PORT] [REMOTE_IP]:https ESTABLISHED`
+        - Foreign Address
 
-2. `netstat -a`:
-It shows all active connection and listening ports.
-Shows active TCP connections only.
-Provides: Protocol, Local Address, Foreign Address, State.
+    The remote computer or server our computer connects to, along with the port number.
 
-3. `netstat -n`:
-It shows addresses and port number numerically.
-Shows connections numerically (IP addresses and port numbers) instead of resolving hostnames and services.
-Using "-n": ":https" -> ":443"
+        - State
 
-4. `netstat -o`:
-Shows process ID (PID) of each process.
+    It shows the staus of the connection, like "ESTABLISHED" when connection is active and data can be sent / received, "LISTENING" where a port on the computer is waiting for the incoming connections.
 
-5. `| findstr :5173`
-Filter the ouput to give the data only for port "5173".
+        `TCP [LOCAL_IP]:[LOCAL_PORT] [REMOTE_IP]:https ESTABLISHED`
 
-6. `taskkill`:
-Command to terminate a process.
+2.  `netstat -a`:
+    It shows all active connection and listening ports.
+    Shows active TCP connections only.
+    Provides: Protocol, Local Address, Foreign Address, State.
 
-7. `/PID {PID}`:
-Specifies which process we want to kill.
+3.  `netstat -n`:
+    It shows addresses and port number numerically.
+    Shows connections numerically (IP addresses and port numbers) instead of resolving hostnames and services.
+    Using "-n": ":https" -> ":443"
 
-8. `/F`:
-Forces the process to terminate. Without `/F` the process might not terminate.
+4.  `netstat -o`:
+    Shows process ID (PID) of each process.
+
+5.  `| findstr :5173`
+    Filter the ouput to give the data only for port "5173".
+
+6.  `taskkill`:
+    Command to terminate a process.
+
+7.  `/PID {PID}`:
+    Specifies which process we want to kill.
+
+8.  `/F`:
+    Forces the process to terminate. Without `/F` the process might not terminate.
+
+
+<a href="https://greatstack.dev/p/quickshow" style="text-decoration:none;">
+  <img src="https://img.shields.io/badge/Credits-GreatStack-ff6f61?style=for-the-badge">
+</a>
+
+> This project was created from following the GreatStack tutorial.
