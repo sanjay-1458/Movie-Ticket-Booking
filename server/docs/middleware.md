@@ -84,3 +84,24 @@ app.use(cors({
 ```
 
 CORS middleware should run before any route definition.
+
+## Protect Admin
+
+Since Admin can add movies directly from TMDB API, we need to protect the admin route, so we will use the `userId` from `req.auth()` to validate that user is Admin or not.
+
+And this method exists because we have used clerk middleware which provide us:
+``` css
+req.auth.userId;
+req.auth.sessionId;
+req.auth.actor;
+```
+
+The middleware `protectAdmin` is used to validate the user using `userId` to get their role. If user role is admin only they can access and process to next middleware.
+
+``` js
+const user=await clerkClient.users.getUser(userId);
+
+if(user.privateMetadata.role !== 'admin') {
+    // User is not admin
+}
+```
