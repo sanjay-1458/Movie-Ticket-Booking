@@ -80,3 +80,23 @@ On `Configure` section in CLerk set `Endpoint` to Inngest
 
 Our goal it to store user data on the "User" model in the database, but since user is logged-in via Clerk. When user is created we trigger an event an Inngest will get data of user from clerk and save those data in the "User" model.
 
+Here, we don't have write login in server for CRUD operation in user, we onky need to provide the inngest function.
+
+``` js
+const syncUserDeletion = inngest.createFunction(
+    {id:"delete-user-with-clerk"},
+    {event:"clerk/user.deleted"},
+    async ({event})=>{
+        const {
+            id
+        } = event.data
+        await User.findByIdAndDelete(id);
+    }
+)
+export const functions = [syncUserDeletion];
+```
+
+This will automaticaly execute the code when `clerk/user.deleted` event occurs.
+And same is updated in database.
+
+<img src="../public/inngest.png" alt="Clerk Preview" width="380">

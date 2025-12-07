@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
-import timeFormat from "../lib/timeFormat.ts";
+import timeFormat from "../../lib/timeFormat.ts";
 type MovieCardProps = {
   _id: string;
   title: string;
