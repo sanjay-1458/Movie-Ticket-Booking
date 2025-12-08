@@ -1,5 +1,9 @@
 # Database
 
+This section gives a simple explanation of how our database works, how the application connects to it, and why we use tools like MongoDB Atlas, Mongoose, and MongoClient. The idea is to form connecting to the database, creating schemas, defining models, and finally saving documents.
+
+It flows as: connect to database → define schema → create model → save or fetch records. Everything else in the API depends on this database.
+
 ### MongoDB Atlas
 
 It is a cloud-based database, it gives us database as a service, it supports cloud providers like: `"AWS", "Azure", "Google Cloud"`. <br>
@@ -165,12 +169,11 @@ Node App -----> MongoClient created with URI
 
 ```
 
-
 ## Movie Collection
 
 The schema conatins the basic details we need to fullfill the requirement of what user sees in the frontend, like movie name, casts, etc.
 
-``` js
+```js
 const movieSchema = new mongoose.Schema(
   {
     _id: {

@@ -27,9 +27,9 @@ req.auth.actor;
 Blocks access unless user is logged in. <br>
 Blocks anyone not logged in, returns 401 if no valid session
 
-``` js
+```js
 // Use `getAuth()` to get the user's `userId`
-  const { userId } = getAuth(req)
+const { userId } = getAuth(req);
 ```
 
 ```js
@@ -56,7 +56,7 @@ Even if user log-in on the frontend, the backend still needs clerk for authentic
 
 Inngest react to events asynchronously.<br>
 
-``` js
+```js
 Clerk triggers a webhook → Inngest receives it → runs the workflow (send email, update DB, etc.)
 ```
 
@@ -71,9 +71,9 @@ Inngest recives the webhook and runs a workflow<br>
 
 First get the required keys from Inngest website
 
-``` js
-INNGEST_EVENT_KEY = key
-INNGEST_SIGNING_KEY = key
+```js
+INNGEST_EVENT_KEY = key;
+INNGEST_SIGNING_KEY = key;
 ```
 
 On `Configure` section in CLerk set `Endpoint` to Inngest
@@ -82,17 +82,15 @@ Our goal it to store user data on the "User" model in the database, but since us
 
 Here, we don't have write login in server for CRUD operation in user, we onky need to provide the inngest function.
 
-``` js
+```js
 const syncUserDeletion = inngest.createFunction(
-    {id:"delete-user-with-clerk"},
-    {event:"clerk/user.deleted"},
-    async ({event})=>{
-        const {
-            id
-        } = event.data
-        await User.findByIdAndDelete(id);
-    }
-)
+  { id: "delete-user-with-clerk" },
+  { event: "clerk/user.deleted" },
+  async ({ event }) => {
+    const { id } = event.data;
+    await User.findByIdAndDelete(id);
+  }
+);
 export const functions = [syncUserDeletion];
 ```
 
@@ -100,3 +98,18 @@ This will automaticaly execute the code when `clerk/user.deleted` event occurs.
 And same is updated in database.
 
 <img src="../public/inngest.png" alt="Clerk Preview" width="380">
+
+The application uses the route:<br>
+
+```js
+app.use("/api/inngest", serve({ client: inngest, functions }));
+```
+
+To get activated, along with that we need to provide the backend deployed URL so inngest can work.
+
+We also add favorite movie data in `Clerk User Private Metadata` as additonal data specific for user, this heps in not creating additional database of favorites movies.
+
+```js
+const user = await clerkClient.users.getUser(userId);
+user.privateMetadata.favorite.push(movieId);
+```

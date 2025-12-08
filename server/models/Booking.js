@@ -1,6 +1,6 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
-const bookingSchema = new mongoose.schema(
+const bookingSchema = new mongoose.Schema(
   {
     user: {
       type: String,
