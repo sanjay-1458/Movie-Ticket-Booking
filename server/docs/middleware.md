@@ -2,21 +2,14 @@
 
 Middleware is a function that sits between request and response, it can modify request and response object, perform some actions like authenication, decide whether to pass control to next middleware.
 
-## Overview
-
-## Setup
-
-## Configuration
-
-
-``` js
+```js
 app.use(function(req, res, next) => {
 
     // Perform some logic
     next();
 })
 
-// or 
+// or
 
 const middleware = (req, res, next) => {
 
@@ -47,7 +40,7 @@ app.use((err, req, res, next) => {
 
 When the server recieves a POST request like:
 
-``` json
+```json
 {
   "name": "Alice",
   "age": 25
@@ -56,18 +49,18 @@ When the server recieves a POST request like:
 
 In plain Node.js application we would get that data using stream and after that we would convert it to JSON, because data is tranfered as performing JSON.stringify, so we would have to do it as:
 
-``` js
+```js
 let body = "";
 
-req.on("data",(chunk)=>{
-    data += chunk;
-})
-req.on("end",()=>{
-    const parsedData = JSON.parse(body);
+req.on("data", (chunk) => {
+  data += chunk;
+});
+req.on("end", () => {
+  const parsedData = JSON.parse(body);
 
-    // Now we have same object we get from client
-    console.log(parsedData.name);
-})
+  // Now we have same object we get from client
+  console.log(parsedData.name);
+});
 ```
 
 So, when we call use middleware `app.use(express.json())`, it internally gathers data from the stream and parse it and store in `req.body`, after that it passes control to next middleware using `next()`.
@@ -76,11 +69,13 @@ So, when we call use middleware `app.use(express.json())`, it internally gathers
 
 Since we are not sending and receiving data from same origin, as client and server is on differnt origin we need to setup the CORS, and it is done using middleware.
 
-``` js
-app.use(cors({
-    origin:"http://localhost:5173",
-    methods:["GET","POST"],
-}))
+```js
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  })
+);
 ```
 
 CORS middleware should run before any route definition.
@@ -90,7 +85,8 @@ CORS middleware should run before any route definition.
 Since Admin can add movies directly from TMDB API, we need to protect the admin route, so we will use the `userId` from `req.auth()` to validate that user is Admin or not.
 
 And this method exists because we have used clerk middleware which provide us:
-``` css
+
+```css
 req.auth.userId;
 req.auth.sessionId;
 req.auth.actor;
@@ -98,10 +94,10 @@ req.auth.actor;
 
 The middleware `protectAdmin` is used to validate the user using `userId` to get their role. If user role is admin only they can access and process to next middleware.
 
-``` js
-const user=await clerkClient.users.getUser(userId);
+```js
+const user = await clerkClient.users.getUser(userId);
 
-if(user.privateMetadata.role !== 'admin') {
-    // User is not admin
+if (user.privateMetadata.role !== "admin") {
+  // User is not admin
 }
 ```

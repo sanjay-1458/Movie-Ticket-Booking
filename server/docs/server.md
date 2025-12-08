@@ -2,14 +2,14 @@
 
 To create a single Express apllication object we do `app = express()`. Now this object will have:
 
-``` cpp
+```cpp
 app.get()
 app.post()
 app.use()
 app.listen()
 ```
 
-``` cpp
+```cpp
     ┌─────────────────┐
     │   express()     │
     │  (factory)      │
@@ -39,3 +39,15 @@ Connect to database using mongoose using `mongoose.connect(URI)`.
 
 Integrate with clerk middleware to make consistent user across frontend and backend.
 `app.use(clerkMiddleware());`
+
+Based on the main routes we can specify all routes in basic broad routes like:
+
+```js
+app.use("/api/inngest", serve({ client: inngest, functions }));
+
+app.use("/api/show", showRouter);
+
+app.use("/api/booking", bookingRouter);
+
+app.use("/api/admin", adminRouter);
+```
