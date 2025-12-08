@@ -64,6 +64,40 @@ Show.find({showDateTime:{$gte:new Date()}}).populate('movie').sort({showDateTime
 ## Individual Movies
 
 When user click on any movie, they will get all the data of that movies like title, overview, casts, etc. We can fetch the data of individual movies using movie id which we get from query parameter, like `http://localhost:5173/movies/324544`.
+```js
+res.json({ sucess: true, movie, dateTime });
+```
+This data can be added to both when showing individal movie and when user are selecting their shows.
+
+
+## Seats Available
+
+When user visits a show, they need to select the seats with time slot. So, here we will first see which seats are booked, and that came from the api call
+
+### Synchronization Problem 
+
+Now, here we can encounter synchronization problem where if multiple user books same show with same seats at same time.<br>
+> To show the avilable seats we can use 2 ways:<br>
+1. Highlight the booked seats on frontend by just fetching the `bookedSeats` fron backend for a show.
+2. Hightlight the booked seats, also check if that seat is already booked in that show.
+
+User can face synchronization problem where a seat can be double booked if both user select the same seat for a movie.
+The other problem is if user bypass the booked seats and sends a post request to backend than it may cause double booking.<br>
+
+We can solve this problem by adding a filter which check whether the for a user the selcted seats are not present is the database.
+```js
+const checkSeatAvailability = async(showId, selectedSeats) => {
+
+  // Checked whether selectedSeats are already booked for `showId`
+
+}
+```
+
+
+With the seat selction we can save the booking data along with sending which seats were booked for a particular show.
+```js
+createBooking -> checkSeatAvailability
+```
 
 ## Admin Dashboard
 

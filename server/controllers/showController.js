@@ -53,6 +53,8 @@ export const addShow = async (req, res) => {
       const movieAPIData = movieDetailsResponse.data;
       const movieCreditsData = movieCreditsResponse.data;
 
+      console.log(movieAPIData.title, movieCreditsData.cast[0].name);
+
       const movieDetails = {
         _id: movieId,
         title: movieAPIData.title,
@@ -93,7 +95,7 @@ export const addShow = async (req, res) => {
     }
     res.json({ success: true, message: "Show Added Successfully" });
   } catch (error) {
-    console.log("Error in Add Show", error.essage);
+    console.log("Error in Add Show", error.message);
     res.json({ success: false, message: error.message });
   }
 };
@@ -109,12 +111,43 @@ export const getShows = async (req, res) => {
     // filtering unique shows
 
     const uniqueShows = new Set(shows.map((show) => show.movie));
-     
-    return res.json({status:true,shows:Array.from(uniqueShows)})
+
+    return res.json({ status: true, shows: Array.from(uniqueShows) });
   } catch (error) {
-    console.log("Error in loading shows in the Home page", error.essage);
+    console.log("Error in loading shows to display movie list", error.essage);
     res.json({ success: false, message: error.message });
   }
 };
 
+// API to get a single show form database
 
+export const getShow = async (req, res) => {
+  try {
+    const { movieId } = req.params;
+    const shows = await Show.find({
+      movie: { $eq: movieId },
+      showDateTime: { $gte: new Date() },
+    });
+    const movie = await Movie.findById(movieId);
+
+    const dateTime = {};
+
+    shows.forEach((show) => {
+      const date = show.showDateTime.toISOString().split("T")[0];
+
+      if (!dateTime[date]) {
+        dateTime[date] = [];
+      }
+
+      dateTime[date].push({
+        time: show.showDateTime,
+        showId: show._id,
+      });
+    });
+
+    res.json({ sucess: true, movie, dateTime });
+  } catch (error) {
+    console.log("Error in loading detail of single movie", error.essage);
+    res.json({ success: false, message: error.message });
+  }
+};
