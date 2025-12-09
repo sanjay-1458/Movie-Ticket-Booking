@@ -4,8 +4,20 @@ import Show from "../models/Show.js";
 
 // API to get the now playing movies from TMDB API
 
+let cachedMovies = null;
+let cacheTime = 0;
+let cachedMovieDetails = {};
+const CACHE_DURATION = 5 * 60 * 1000;
+
 export const getNowPlayingMovies = async (req, res) => {
   try {
+    const now = Date.now();
+
+    if (cachedMovies && now - cacheTime < CACHE_DURATION) {
+      console.log("Serving data from cache");
+      return res.json({ success: true, movies: cachedMovies });
+    }
+
     const { data } = await axios.get(
       "https://api.themoviedb.org/3/movie/now_playing",
       {
@@ -17,12 +29,18 @@ export const getNowPlayingMovies = async (req, res) => {
 
     const movies = data.results;
 
-    res.json({ sucess: true, movies: movies });
+    res.json({ success: true, movies: movies });
+    cacheTime = Date.now();
+    cachedMovies = data.results;
+    console.log("movie", movies[0]);
   } catch (error) {
-    console.log(
-      "Error in fetching now playing movies for Admin section",
-      error
-    );
+    console.log("Error in fetching now playing movies", error);
+
+    if (cachedMovies) {
+      console.log("API request fail, sending cached movies");
+      return res.json({ success: true, movies: cachedMovies });
+    }
+
     res.json({ success: false, message: error.message });
   }
 };
@@ -35,43 +53,59 @@ export const addShow = async (req, res) => {
     let movie = await Movie.findById(movieId);
 
     if (!movie) {
+      const now = Date.now();
       // Fetch movie with the given id
+      if (
+        cachedMovieDetails[movieId] &&
+        now - cachedMovieDetails[movieId].cacheTime < CACHE_DURATION
+      ) {
+        movie = cachedMovieDetails[movieId].data;
+        console.log("Serving movie details from cache");
+      } else {
+        const [movieDetailsResponse, movieCreditsResponse] = await Promise.all([
+          axios.get(`https://api.themoviedb.org/3/movie/${movieId}`, {
+            headers: {
+              Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+            },
+          }),
+          axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
+            headers: {
+              Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+            },
+          }),
+        ]);
 
-      const [movieDetailsResponse, movieCreditsResponse] = await Promise.all([
-        axios.get(`https://api.themoviedb.org/3/movie/${movieId}`, {
-          headers: {
-            Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
-          },
-        }),
-        axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
-          headers: {
-            Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
-          },
-        }),
-      ]);
+        const movieAPIData = movieDetailsResponse.data;
+        const movieCreditsData = movieCreditsResponse.data;
 
-      const movieAPIData = movieDetailsResponse.data;
-      const movieCreditsData = movieCreditsResponse.data;
+        console.log(movieAPIData.title, movieCreditsData.cast[0].name);
 
-      console.log(movieAPIData.title, movieCreditsData.cast[0].name);
+        const movieDetails = {
+          _id: movieId,
+          title: movieAPIData.title,
+          overview: movieAPIData.overview,
+          poster_path: movieAPIData.poster_path,
+          backdrop_path: movieAPIData.backdrop_path,
+          release_date: movieAPIData.release_date,
+          original_language: movieAPIData.original_language,
+          tagline: movieAPIData.tagline || "",
+          genres: movieAPIData.genres,
+          casts: movieCreditsData.cast,
+          vote_average: movieAPIData.vote_average,
+          vote_count: movieAPIData.vote_count,
+          id: movieAPIData.id,
+          runtime: movieAPIData.runtime,
+        };
 
-      const movieDetails = {
-        _id: movieId,
-        title: movieAPIData.title,
-        overview: movieAPIData.overview,
-        poster_path: movieAPIData.poster_path,
-        backdrop_path: movieAPIData.backdrop_path,
-        release_date: movieAPIData.release_date,
-        original_language: movieAPIData.original_language,
-        tagline: movieAPIData.tagline || "",
-        genres: movieAPIData.genres,
-        casts: movieCreditsData.cast,
-        vote_average: movieAPIData.vote_average,
-        runtime: movieAPIData.runtime,
-      };
-      // Adding movie to database
+        cachedMovieDetails[movieId] = {
+          data: movieDetails,
+          cacheTime: Date.now(),
+        };
 
-      await Movie.create(movieDetails);
+        // Adding movie to database
+
+        await Movie.create(movieDetails);
+      }
     }
 
     const showsToCreate = [];
@@ -95,7 +129,7 @@ export const addShow = async (req, res) => {
     }
     res.json({ success: true, message: "Show Added Successfully" });
   } catch (error) {
-    console.log("Error in Add Show", error.message);
+    console.log("Failed to fetcj movie details. Try agin later.", error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -112,7 +146,7 @@ export const getShows = async (req, res) => {
 
     const uniqueShows = new Set(shows.map((show) => show.movie));
 
-    return res.json({ status: true, shows: Array.from(uniqueShows) });
+    return res.json({ success: true, shows: Array.from(uniqueShows) });
   } catch (error) {
     console.log("Error in loading shows to display movie list", error.essage);
     res.json({ success: false, message: error.message });
@@ -145,7 +179,8 @@ export const getShow = async (req, res) => {
       });
     });
 
-    res.json({ sucess: true, movie, dateTime });
+    res.json({ success: true, movie, dateTime });
+    console.log("fetched")
   } catch (error) {
     console.log("Error in loading detail of single movie", error.essage);
     res.json({ success: false, message: error.message });

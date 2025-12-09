@@ -1,46 +1,59 @@
 import { useEffect, useState } from "react";
-import { dummyShowsData } from "../../assets/assets";
-import type { Movie } from "../MovieDetails/MovieDetails";
+
 import Loading from "../../components/Loading/Loading";
 import Title from "./Title";
 import dateFormat from "../../lib/dateFormat";
 import BlurCircle from "../../components/BlurCircle/BlurCircle";
+import { useAppContext } from "../../context/AppContext";
+import type Show from "../../types/show";
+import toast from "react-hot-toast";
 
-export type ListShowsDataType = {
-  movie: Movie;
-  showDateTime: string;
-  showPrice: number;
-  occupiedSeats: Record<string, string>;
-};
+interface ListShowsSuccess {
+  shows: Show[];
+  success: true;
+}
+
+interface ListShowsError {
+  message: string;
+  success: false;
+}
+
+type ListShowsDataType = ListShowsError | ListShowsSuccess;
 
 function ListShows() {
+  const { axios, getToken, user } = useAppContext();
   const currency = import.meta.env.VITE_CURRENCY;
 
-  const [shows, setShows] = useState<ListShowsDataType[]>([]);
+  const [shows, setShows] = useState<Show[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getAllShows = async () => {
       try {
-        setShows([
+        const token = await getToken();
+        const { data } = await axios.get<ListShowsDataType>(
+          "/api/admin/all-shows",
           {
-            movie: dummyShowsData[0],
-            showDateTime: "2025-06-30T02:30:00.000Z",
-            showPrice: 59,
-            occupiedSeats: {
-              A1: "user_1",
-              B1: "user_2",
-              C1: "user_3",
+            headers: {
+              Authorization: `Bearer ${token}`,
             },
-          },
-        ]);
+          }
+        );
+
+        if (data.success) {
+          setShows(data.shows);
+        } else {
+          toast.error("Error in fetching shows data");
+        }
         setLoading(false);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     };
-    getAllShows();
-  }, []);
+    if (user) {
+      getAllShows();
+    }
+  }, [user]);
 
   return !loading ? (
     <>

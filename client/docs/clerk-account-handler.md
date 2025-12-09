@@ -11,14 +11,14 @@ Clerk Website: [Clerk Website](https://dashboard.clerk.com/)
 
 With Clerk, we can login in using Google account along side navigating to other pages from with-in the profile handler with multi-account login.
 
-``` js
+```js
 <UserButton>
-    <UserButton.MenuItems>
-     <UserButton.Action
-        label="My Bookings"
-        onClick={() => navigate("/my-bookings")}
+  <UserButton.MenuItems>
+    <UserButton.Action
+      label="My Bookings"
+      onClick={() => navigate("/my-bookings")}
     />
-    </UserButton.MenuItems>
+  </UserButton.MenuItems>
 </UserButton>
 ```
 

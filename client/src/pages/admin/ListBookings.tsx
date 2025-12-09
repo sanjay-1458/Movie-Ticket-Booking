@@ -1,33 +1,59 @@
 import { useEffect, useState } from "react";
-import { dummyBookingData } from "../../assets/assets";
-import type { ListShowsDataType } from "./ListShows";
+
 import Loading from "../../components/Loading/Loading";
 import Title from "./Title";
 import BlurCircle from "../../components/BlurCircle/BlurCircle";
 import dateFormat from "../../lib/dateFormat";
+import { useAppContext } from "../../context/AppContext";
+import type Booking from "../../types/booking";
+import toast from "react-hot-toast";
 
-export type ListBookingsType = {
-  _id: string;
-  user: Record<string, string>;
-  show: Omit<ListShowsDataType, "occupiedSeats"> & { _id: string };
-  amount: number;
-  bookedSeats: string[];
-  isPaid: boolean;
-};
+interface ListBookingSuccess {
+  success: true;
+  bookings: Booking[];
+}
+
+interface ListBookingError {
+  success: false;
+  message: string;
+}
+
+type ListBookingAPIResponse = ListBookingSuccess | ListBookingError;
 
 function ListBookings() {
+  const { axios, getToken, user } = useAppContext();
   const currency = import.meta.env.VITE_CURRENCY;
 
-  const [bookings, setBookings] = useState<ListBookingsType[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getAllBookings = async () => {
-      setBookings(dummyBookingData);
+      try {
+        const token = await getToken();
+        const { data } = await axios.get<ListBookingAPIResponse>(
+          "/api/admin/all-bookings",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (data.success) {
+          setBookings(data.bookings);
+        } else {
+          toast.error("Failed to fetch bookings");
+        }
+      } catch (error) {
+        console.log("Error in fetchng all booking data");
+      }
+
       setIsLoading(false);
     };
-    getAllBookings();
-  }, []);
+    if (user) {
+      getAllBookings();
+    }
+  }, [user]);
 
   return !isLoading ? (
     <>

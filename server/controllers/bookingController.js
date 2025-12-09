@@ -3,21 +3,16 @@ import Show from "../models/Show.js";
 
 // Function to check availabilty of seats
 const checkSeatAvailability = async (showId, selectedSeats) => {
-  try {
-    const showData = await Show.findById(showId);
-    if (!showData) {
-      return false;
-    }
+  const clash = await Show.findOne({
+    _id: showId,
+    $or: selectedSeats.map(seat => ({
+      [`occupiedSeats.${seat}`]: { $exists: true }
+    }))
+  });
 
-    const occupiedSeats = showData.occupiedSeats;
-
-    const isAnySeatTaken = selectedSeats.some((seat) => occupiedSeats[seat]);
-
-    return !isAnySeatTaken;
-  } catch (error) {
-    console.log("Error in deciding booked seats", error.message);
-  }
+  return !clash;
 };
+
 
 // Creating booking data
 
@@ -26,45 +21,39 @@ export const createBooking = async (req, res) => {
     const { userId } = req.auth();
     const { showId, selectedSeats } = req.body;
 
-    const { origin } = req.headers;
-
-    // Check seats
-
-    const isAvialable = await checkSeatAvailability(showId, selectedSeats);
-
-    if (!isAvialable) {
+    const available = await checkSeatAvailability(showId, selectedSeats);
+    if (!available) {
       return res.json({
         success: false,
-        message: "Selected seats are not available",
+        message: "Some seats are already booked",
       });
     }
 
     const showData = await Show.findById(showId).populate("movie");
 
-    const booking = await Booking.create({
+    // Create booking
+    await Booking.create({
       user: userId,
       show: showId,
       amount: showData.showPrice * selectedSeats.length,
       bookedSeats: selectedSeats,
     });
-    selectedSeats.map((seat) => {
+
+    // Update seats atomically
+    for (const seat of selectedSeats) {
       showData.occupiedSeats[seat] = userId;
-    });
-    // We are saying mongoose to save occupiedSeats data as it has been modified (we are modifieying nested structure without replacing it)
-    // markMofied is only for nested objects / array
+    }
 
     showData.markModified("occupiedSeats");
-
     await showData.save();
 
-    // Stripe gateway
-
-    res.json({ success: true, message: "Booked successfully" });
+    return res.json({ success: true, message: "Booked successfully" });
   } catch (error) {
-    console.log("Error in create booking section", error.message);
-    res.json({ success: false, message: error.message });
+    console.log("Booking error:", error);
+    return res.json({ success: false, message: error.message });
   }
 };
+
 
 export const getOccupiedSeats = async (req, res) => {
   try {

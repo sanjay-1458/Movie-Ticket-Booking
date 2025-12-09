@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Movie } from "../MovieDetails/MovieDetails";
+
 import {
   ChartLineIcon,
   CircleDollarSignIcon,
@@ -7,24 +7,32 @@ import {
   Star,
   UsersIcon,
 } from "lucide-react";
-import { dummyDashboardData } from "../../assets/assets";
 import Loading from "../../components/Loading/Loading";
 import Title from "./Title";
 import BlurCircle from "../../components/BlurCircle/BlurCircle";
 import dateFormat from "../../lib/dateFormat";
+import { useAppContext } from "../../context/AppContext";
+import type Show from "../../types/show";
+import toast from "react-hot-toast";
 
-export type DashboardDataType = {
+interface DashboardDataType {
   totalBookings: number;
   totalRevenue: number;
+  activeShows: Show[];
   totalUser: number;
-  activeShows: {
-    movie: Movie;
-    _id: string;
-    showPrice: number;
-    showDateTime: string;
-  }[];
-};
+}
+interface DashboardError {
+  success: false;
+  message: string;
+}
+interface DashboardSuccess {
+  success: true;
+  dashBoardData: DashboardDataType;
+}
+type DashBoardAPIResponse = DashboardSuccess | DashboardError;
+
 function Dashboard() {
+  const { axios, getToken, user, image_base_url } = useAppContext();
   const currency = import.meta.env.VITE_CURRENCY;
   const [dashboardData, setDashboardData] = useState<DashboardDataType>({
     totalBookings: 0,
@@ -59,11 +67,34 @@ function Dashboard() {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      setDashboardData(dummyDashboardData);
+      try {
+        const token = await getToken();
+        const { data } = await axios.get<DashBoardAPIResponse>(
+          "/api/admin/dashboard",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (data.success) {
+          setDashboardData(data.dashBoardData);
+          setLoading(false);
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error("Error fetching dashboard data");
+        console.error("Error fetching dashboard data:", error);
+      }
+
       setLoading(false);
     };
-    fetchDashboardData();
-  }, []);
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]);
   return !loading ? (
     <>
       <Title text1="Admin" text2="Dashboard" />
@@ -96,7 +127,7 @@ function Dashboard() {
             key={show._id}
           >
             <img
-              src={show.movie.poster_path}
+              src={image_base_url + show.movie.poster_path}
               className="h-60 w-full object-cover"
             />
             <p className="font-medium p-2 truncate">{show.movie.title}</p>

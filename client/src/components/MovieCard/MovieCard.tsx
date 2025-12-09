@@ -2,24 +2,20 @@ import { Star } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
 import timeFormat from "../../lib/timeFormat.ts";
-type MovieCardProps = {
-  _id: string;
-  title: string;
-  backdrop_path: string;
-  release_date: string;
-  genres: { id: number; name: string }[];
-  runtime: number;
-  vote_average: number;
-};
+import type Movie from "../../types/movie.ts";
+import { useAppContext } from "../../context/AppContext.tsx";
 
-function MovieCard({ movie }: { movie: MovieCardProps }) {
+
+
+function MovieCard({ movie }: { movie: Movie }) {
+  const {image_base_url} = useAppContext();
   const navigate = useNavigate();
   return (
     <div className="flex flex-col justify-between p-3 bg-gray-800/60 rounded-2xl hover:-translate-y-1 transition duration-300 w-66
     
     max-md:w-50 max-md:h-70">
       <img
-        src={movie.backdrop_path}
+        src={image_base_url+ movie.backdrop_path}
         alt="Movie Poster"
         className="rounded-lg h-52 w-full object-cover object-bottom-right cursor-pointer"
         onClick={() => {
@@ -27,7 +23,7 @@ function MovieCard({ movie }: { movie: MovieCardProps }) {
           scrollTo(0, 0);
         }}
       />
-      <p className="font-semibold mt-2 truncate">{movie.title}</p>
+      <p className="font-semibold mt-2 pb-3 truncate">{movie.title}</p>
       <p className="text-sm text-gray-400 mt-2">
         {new Date(movie.release_date).getFullYear()} •{" "}
         {movie.genres
