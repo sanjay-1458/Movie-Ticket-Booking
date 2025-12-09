@@ -1,15 +1,48 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { assets, dummyDateTimeData, dummyShowsData } from "../../assets/assets";
-import type { DateTime, Movie } from "../MovieDetails/MovieDetails";
+import { assets } from "../../assets/assets";
+
 import Loading from "../../components/Loading/Loading";
 import { ArrowRight, Clock } from "lucide-react";
 import ISOTimeFormat from "../../lib/ISOTimeFormat";
 import BlurCircle from "../../components/BlurCircle/BlurCircle";
 import toast from "react-hot-toast";
+import { useAppContext } from "../../context/AppContext";
+import type Movie from "../../types/movie";
+
+interface DateTime {
+  [date: string]: { time: string; showId: string }[];
+}
+interface SeatLayoutSuccess {
+  success: true;
+  movie: Movie;
+  dateTime: DateTime;
+}
+
+interface SeatLayoutError {
+  success: false;
+  message: string;
+}
+
+type SeatLayoutAPIResponse = SeatLayoutError | SeatLayoutSuccess;
+
+interface GetOccupiedSeatsSuccess {
+  success: true;
+  occupiedSeats: string[];
+}
+interface GetOccupiedSeatsError {
+  success: false;
+  message: string;
+}
+
+type GetOccupiedSeatsAPIResponse =
+  | GetOccupiedSeatsSuccess
+  | GetOccupiedSeatsError;
 
 function SeatLayout() {
   const { id, date } = useParams();
+  const { axios, getToken, user } = useAppContext();
+  const [occupiedSeats, setOccupiedSeats] = useState<string[]>([]);
 
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 
@@ -18,13 +51,13 @@ function SeatLayout() {
     showId: string;
   } | null>(null);
 
-  const [show, setShow] = useState<{ movie: Movie; dateTime: DateTime } | null>(
+  const [show, setShow] = useState<Omit<SeatLayoutSuccess, "success"> | null>(
     null
   );
 
   const navigate = useNavigate();
 
-  const groupRows = [
+  const groupRows: string[][] = [
     ["A", "B"],
     ["C", "D"],
     ["E", "F"],
@@ -40,6 +73,9 @@ function SeatLayout() {
     if (!selectedSeats.includes(seatId) && selectedSeats.length > 4) {
       return toast("You can only select 5 seats");
     }
+    if (occupiedSeats.includes(seatId)) {
+      return toast.error("This seat is already occupied");
+    }
 
     setSelectedSeats((prev) =>
       prev.includes(seatId)
@@ -54,15 +90,25 @@ function SeatLayout() {
         <div className="flex flex-wrap items-center justify-center gap-2">
           {Array.from({ length: col }, (_, i) => {
             const seatId = `${row}${i + 1}`;
+            {
+              console.log("occupied seats:", occupiedSeats);
+            }
+            {
+              console.log("current seat:", seatId);
+            }
+
             return (
               <button
                 key={seatId}
                 onClick={() => {
                   handleSeatClick(seatId);
                 }}
-                className={`h-8 w-8 rounded border border-primary/60 cursor-pointer ${
-                  selectedSeats.includes(seatId) && "bg-primary text-white"
-                }`}
+                className={`${
+                  occupiedSeats.includes(seatId) ? "opacity-50" : ""
+                } 
+                  h-8 w-8 rounded border border-primary/60 cursor-pointer ${
+                    selectedSeats.includes(seatId) && "bg-primary text-white"
+                  }`}
               >
                 {seatId}
               </button>
@@ -72,15 +118,72 @@ function SeatLayout() {
       </div>
     );
   };
+
+  const bookTickets = async () => {
+    try {
+      if (!user) {
+        return toast.error("Please login to book a show");
+      }
+      if (!selectedTime || !selectedSeats.length) {
+        return toast.error("Please select seat and time to proceed");
+      }
+      const token = await getToken();
+      const { data } = await axios.post(
+        "/api/booking/create",
+        {
+          showId: selectedTime.showId,
+          selectedSeats,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (data.success) {
+        toast.success(data.message);
+        navigate("/my-bookings");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log("Error in boooking tickets", error);
+    }
+  };
+  useEffect(() => {
+    if (selectedTime) {
+      getOccupiedSeats();
+    }
+  }, [selectedTime]);
+  const getOccupiedSeats = async () => {
+    try {
+      const { data } = await axios.get<GetOccupiedSeatsAPIResponse>(
+        `/api/bookings/seats/${selectedTime?.showId}`
+      );
+
+      if (data.success) {
+        setOccupiedSeats(data.occupiedSeats);
+      } else {
+        toast.error("Falied to load booked seats");
+      }
+    } catch (error) {
+      console.log("Error in fetching occupied seats data", error);
+    }
+  };
+
   useEffect(() => {
     const getShow = async () => {
-      const currShow = dummyShowsData.find((movie) => movie._id === id);
-
-      if (currShow) {
-        setShow({
-          movie: currShow,
-          dateTime: dummyDateTimeData,
-        });
+      try {
+        const { data } = await axios.get<SeatLayoutAPIResponse>(
+          `/api/show/${id}`
+        );
+        if (data.success) {
+          setShow({ movie: data.movie, dateTime: data.dateTime });
+        } else {
+          toast.error("Error in fetching show data");
+        }
+      } catch (error) {
+        console.log("Error in seat layout section", error);
       }
     };
     getShow();
@@ -148,7 +251,7 @@ function SeatLayout() {
 
         <button
           onClick={() => {
-            navigate("/my-bookings");
+            bookTickets();
           }}
           className="flex items-center gap-1 mt-20 px-10 py-3 text-sm bg-primary hover:bg-primary/70
         hover:-translate-y-1 transition rounded-full font-medium cursor-pointer active:scale-95"

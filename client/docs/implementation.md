@@ -1,11 +1,11 @@
 ## Root Rendering
 
-``` ts
-createRoot(document.getElementById('root')!).render(
+```ts
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />
-  </StrictMode>,
-)
+  </StrictMode>
+);
 ```
 
 Here `document.getElementById('root')` has return type "HTMLElement | null". Meaning it could be null at runtime.
@@ -51,8 +51,8 @@ Doing `bg-[###]` evrytime can cause bug, so a custom css property is used using 
 
 ```css
 @theme {
-  --color-primary: #F84565;
-  --color-secondary: #D63854;
+  --color-primary: #f84565;
+  --color-secondary: #d63854;
 }
 ```
 
@@ -75,9 +75,10 @@ Tools used: `Vitest` + `React Testing Library`.
 A simple lib function is created which take input as the minutes and return it in hour + minutes format, useful for showing movie runtime.
 
 ## React Player
+
 Integrated `react-player`, which is a React component for embedding and playing video and audio in React application. It provides a consistent interface for various media sources, like YouTube, or local media files.
 
-``` js
+```js
 <ReactPlayer url="..." />
 ```
 
@@ -86,35 +87,32 @@ Integrated `react-player`, which is a React component for embedding and playing 
 Using `group`, `group-parent` and `group-hover:not-hover`, the fading and highlighting is done for trailer section.
 
 1. group:
-It is a Tailwind utility class, which we assign to parent and child can respond to `group-hover`
+   It is a Tailwind utility class, which we assign to parent and child can respond to `group-hover`
 
 2. group-hover:
-The action we do for a particular element when parent is hovered.
-
+   The action we do for a particular element when parent is hovered.
 
 Example:
-``` js
+
+```js
 <div class="group">
   <p class="group-hover:text-red-500">Paragraph A</p>
   <p class="group-hover:text-blue-500">Paragraph B</p>
 </div>
-
 ```
+
 Here on hovering on `div` the para changes to their respective color.
 
 To remove parent hover when we hover on an element use: `group-hover:not-hover` so that the parent hover is ignored on the hovered element.
 
-``` js
+```js
 <div className="group">
   {dummyTrailers.map((trailer) => (
-    <div
-      key={trailer.image}
-      className="group-hover:not-hover:opacity-50"
-    >
-    </div>
+    <div key={trailer.image} className="group-hover:not-hover:opacity-50"></div>
   ))}
 </div>
 ```
+
 On hovering parent only and no child, every child get their `opacity-50`.
 When a child if hovered we don't apply the `opacity-50` property.
 
@@ -123,6 +121,7 @@ When a child if hovered we don't apply the `opacity-50` property.
 ## Showing Casts Horizontally
 
 Using Tailwind CSS class of:
+
 1. `overflow-x-auto`: We can scroll horizontally, it is usefull for showing casts, while staying at same viewport.
 2. `scrollbar-width: none;`: This CSS property is used for hiding the scroll bar.
 
@@ -136,7 +135,7 @@ Admin pages are implemented using nested routing + `<Outlet/>`, so we can change
 
 The admin can add shows using by storing the data in state variable, such that it can se used in HTTP request.
 
-``` js
+```js
 const [selectedMovie, setSelectedMovie] = useState<number>(0);
 
 const [dateTimeSelection, setDateTimeSelection] = useState<Record<string, string[]>>({});
@@ -147,20 +146,25 @@ const [showPrice, setShowPrice] = useState("");
 ```
 
 Admin cannot store same data as each record is in format:
-``` js
+
+```js
 {
   "date1":["time1","time2"]
 }
 ```
+
 And using filter property we can remove redundancy.
 
-Store the extracted value in a variable named _, but we don’t plan to use it.
+Store the extracted value in a variable named \_, but we don’t plan to use it.
 
 We only show the selected date section only if it has atleast 1 element, to do this we extract that date and return the remaining using desctructing previous state.
-``` js
- _.value = prev[date]; const {[date]:_,...rest} =prev;
+
+```js
+_.value = prev[date];
+const { [date]: _, ...rest } = prev;
 ```
-``` js
+
+```js
 if (filteredTimes.length === 0) {
   const { [date]: _, ...rest } = prev;
   return rest;
@@ -171,6 +175,7 @@ if (filteredTimes.length === 0) {
   };
 }
 ```
+
 <img src="../../frontend/public/new-movies.png" alt="Clerk Preview" width="210">
 
 Showing the selcedt date-time section only when there is something in the state.

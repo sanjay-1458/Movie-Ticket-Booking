@@ -1,26 +1,48 @@
 import { useEffect, useState } from "react";
-import { dummyShowsData } from "../../assets/assets";
-import type { Movie } from "../MovieDetails/MovieDetails";
+
+import type Movie from "../../types/movie";
 import Loading from "../../components/Loading/Loading";
 import Title from "./Title";
 import { CheckIcon, DeleteIcon, StarIcon } from "lucide-react";
 import BlurCircle from "../../components/BlurCircle/BlurCircle";
 import kConvertor from "../../lib/kConvertor";
 import toast from "react-hot-toast";
+import { useAppContext } from "../../context/AppContext";
+
+interface NowPlayingSuccess {
+  success: true;
+  movies: Movie[];
+}
+interface NowPlayingError {
+  success: false;
+  message: string;
+}
+
+interface AddShowAPIResponse {
+  success: boolean;
+  message: string;
+}
+
+type NowPlayingAPIResponse = NowPlayingError | NowPlayingSuccess;
 
 function AddShows() {
+  const { axios, getToken, user, image_base_url } = useAppContext();
+
   const currency = import.meta.env.VITE_CURRENCY;
   const [nowPlayingMovies, setNowPlayingMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [selectedMovie, setSelectedMovie] = useState<number>(0);
+  const [selectedMovie, setSelectedMovie] = useState<number | null>(null);
 
   const [dateTimeSelection, setDateTimeSelection] = useState<
     Record<string, string[]>
   >({});
 
-  const [dateTimeInput, setDateTimeInput] = useState("");
+  const [dateTimeInput, setDateTimeInput] = useState<string>("");
 
-  const [showPrice, setShowPrice] = useState("");
+  const [showPrice, setShowPrice] = useState<string>("");
+
+  const [addingShow, setAddingShow] = useState<boolean>(false);
 
   const handleDateTimeAdd = () => {
     if (!selectedMovie) {
@@ -44,7 +66,55 @@ function AddShows() {
       }
     });
   };
+  const handleSubmit = async () => {
+    try {
+      setAddingShow(true);
+      if (!selectedMovie) {
+        return toast.error("Select a movie");
+      }
 
+      if (!showPrice) {
+        return toast.error("Add show price");
+      }
+      if (Object.keys(dateTimeSelection).length === 0) {
+        return toast("Click Add Show");
+      }
+      const showsInput = Object.entries(dateTimeSelection).map(
+        ([date, time]) => ({ date, time })
+      );
+
+      const payload = {
+        movieId: selectedMovie,
+        showsInput,
+        showPrice: Number(showPrice),
+      };
+
+      const token = await getToken();
+      const { data } = await axios.post<AddShowAPIResponse>(
+        "/api/show/add",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (data.success) {
+        toast.success(data.message);
+        setSelectedMovie(null);
+        setDateTimeSelection({});
+        setShowPrice("");
+        setDateTimeInput("");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error("Failed to add shows to database", error);
+      toast.error("Please try again");
+    } finally {
+      setAddingShow(false);
+    }
+  };
   const handleDateTimeRemove = (date: string, time: string) => {
     setDateTimeSelection((prev) => {
       const filteredTimes = (prev[date] ?? []).filter((t) => t !== time);
@@ -64,12 +134,32 @@ function AddShows() {
 
   useEffect(() => {
     const fetchNowPlayingMovies = async () => {
-      setNowPlayingMovies(dummyShowsData);
+      setLoading(true);
+      try {
+        const token = await getToken();
+        const { data } = await axios.get<NowPlayingAPIResponse>(
+          "/api/show/now-playing",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (data.success) {
+          setNowPlayingMovies(data.movies);
+        }
+      } catch (error) {
+        console.log("Error fetching movies in add-shows section", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchNowPlayingMovies();
-  }, []);
+    if (user) {
+      fetchNowPlayingMovies();
+    }
+  }, [user]);
 
-  return nowPlayingMovies.length > 0 ? (
+  return !loading ? (
     <>
       <Title text1="Add" text2="Shows" />
       <div className="relative">
@@ -83,7 +173,7 @@ function AddShows() {
               <div
                 onClick={() => {
                   setSelectedMovie((prev) =>
-                    prev === movie.id ? 0 : movie.id
+                    prev === movie.id ? null : movie.id
                   );
                 }}
                 key={movie.id}
@@ -93,7 +183,7 @@ function AddShows() {
               >
                 <div className="relative rounded-lg overflow-hidden ">
                   <img
-                    src={movie.poster_path}
+                    src={image_base_url + movie.poster_path}
                     className="w-full  object-cover brightness-90"
                   />
                   <div className="text-sm flex items-center justify-between p-2 bg-black/70 w-full absolute bottom-0 left-0">
@@ -117,12 +207,6 @@ function AddShows() {
                 <div>
                   <p className="font-medium truncate">{movie.title}</p>
                   <p className="text-gray-400 text-sm">{movie.release_date}</p>
-                  <p className="text-gray-300 text-xs truncate">
-                    {movie.genres
-                      .slice(0, 2)
-                      .map((genre) => genre.name)
-                      .join(", ")}
-                  </p>
                 </div>
               </div>
             );
@@ -165,7 +249,7 @@ function AddShows() {
             onClick={handleDateTimeAdd}
             className="bg-primary/80 text-white px-3 py-2 text-sm rounded-lg hover:bg-primary/70 transition duration-300 cursor-pointer"
           >
-            Add Time
+            Add Show
           </button>
         </div>
       </div>
@@ -199,8 +283,12 @@ function AddShows() {
           </ul>
         </div>
       )}
-      <button className="bg-primary text-white px-8 py-2 mt-6 rounded hover:bg-primary/90 transition-all cursor-pointer">
-        Add Show
+      <button
+        onClick={handleSubmit}
+        disabled={addingShow}
+        className="bg-primary text-white px-8 py-2 mt-6 rounded hover:bg-primary/90 transition-all cursor-pointer"
+      >
+        {addingShow ? "Adding..." : "Add Show"}
       </button>
     </>
   ) : (

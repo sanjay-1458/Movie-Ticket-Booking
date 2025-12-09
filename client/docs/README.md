@@ -54,5 +54,3 @@ This is the in-depth document of how the app interact among componet level and l
 This contains what the product is supposed to do, how user interacts and features available.
 
 ---
-
-

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { dummyDateTimeData, dummyShowsData } from "../../assets/assets";
+
 import BlurCircle from "../../components/BlurCircle/BlurCircle";
 import { Heart, PlayCircle, StarIcon } from "lucide-react";
 import timeFormat from "../../lib/timeFormat";
@@ -8,48 +8,97 @@ import DateSelect from "../../components/DateSelect/DateSelect";
 import MovieCard from "../../components/MovieCard/MovieCard";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading/Loading";
+import { useAppContext } from "../../context/AppContext";
+import toast from "react-hot-toast";
+import type Movie from "../../types/movie";
 
-export type Movie = {
-  poster_path: string;
-  title: string;
-  vote_count: number;
-  vote_average: number;
-  overview: string;
-  id: number;
-  runtime: number;
-  genres: { id: number; name: string }[];
-  release_date: string;
-  casts: { name: string; profile_path: string }[];
-  _id: string;
-};
+interface DateTime {
+  [date: string]: { time: string; showId: string }[];
+}
+interface MovieDetailSuccess {
+  success: true;
+  movie: Movie;
+  dateTime: DateTime;
+}
+interface MovieDetailError {
+  success: false;
+  message: string;
+}
 
-export type DateTime = Record<string, { time: string; showId: string }[]>;
+type MovieDetailsAPIResponse = MovieDetailError | MovieDetailSuccess;
+
+interface UpdateFavoriteAPIResponse{
+  success:boolean;
+  message:string;
+}
 
 function MovieDetails() {
+  const { shows, axios, getToken, user, fetchFavoriteMovies, image_base_url,favoriteMovies } =
+    useAppContext();
+
   const { id } = useParams();
-  const [show, setShow] = useState<{ movie: Movie; dateTime: DateTime } | null>(
+  const [show, setShow] = useState<Omit<MovieDetailSuccess, "success"> | null>(
     null
   );
   const navigate = useNavigate();
 
+  const handleFavorite = async()=>{
+    try {
+      if(!user){
+        return toast.error("Please login to proceed");
+      }
+      const token = await getToken();
+      const {data} = await axios.post<UpdateFavoriteAPIResponse>('/api/user/update-favorite',{movieId:id},{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      })
+      if(data.success) {
+        await fetchFavoriteMovies()
+        toast.success('Updated favorite')
+      }
+      else{
+        toast.error('Failed to upadte favorite')
+      }
+
+    } catch (error) {
+      console.log("Failed to update favorite",error);
+    }
+  }
+
   useEffect(() => {
     const getShow = async () => {
-      const currShow = dummyShowsData.find((movie) => movie._id === id);
-
-      if (currShow) {
-        setShow({
-          movie: currShow,
-          dateTime: dummyDateTimeData,
-        });
+      try {
+        const token = await getToken();
+        const { data } = await axios<MovieDetailsAPIResponse>(
+          `/api/show/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(data);
+        if (data.success) {
+          setShow({ movie: data.movie, dateTime: data.dateTime });
+        } else {
+          toast.error("Error in fecthing movie detail.");
+        }
+      } catch (error) {
+        console.log(error);
       }
     };
-    getShow();
+      getShow();
+    
   }, [id]);
+
+
+
   return show ? (
     <div className="px-6 md:px-16  lg:px-40 pt-30 md:pt-50">
       <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
         <img
-          src={show.movie.poster_path}
+          src={image_base_url + show.movie.poster_path}
           alt={show.movie.title}
           className="max-md:mx-auto rounded-xl h-104 max-w-70 object-cover"
         />
@@ -89,8 +138,10 @@ function MovieDetails() {
             >
               Buy Tickets
             </a>
-            <button className="bg-gray-700 p-2.5 rounded-full transition cursor-pointer active:scale-95">
-              <Heart className={`w-5 h-5`} />
+            <button
+            onClick={handleFavorite}
+            className="bg-gray-700 p-2.5 rounded-full transition cursor-pointer active:scale-95">
+              <Heart className={`w-5 h-5 ${favoriteMovies.find(movie=>movie._id==id)?"fill-primary text-primary":""} `} />
             </button>
           </div>
         </div>
@@ -105,13 +156,16 @@ function MovieDetails() {
             >
               <div className="h-20 w-20 rounded-full overflow-hidden">
                 <img
-                  src={cast.profile_path}
+                  src={image_base_url + cast.profile_path}
                   alt={cast.name}
                   className="rounded-full h-20 w-20  object-cover object-top
-             border-2 border-red-500 "
+             border"
                 />
               </div>
-              <p className="font-medium text-xs mt-3">{cast.name}</p>
+              <div className="">
+                <p className="text-gray-400 text-xs font-light">{cast.character}</p>
+                <p className="font-medium text-xs">{cast.name}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -120,7 +174,7 @@ function MovieDetails() {
 
       <p className="text-lg font-medium mt-20 mb-8">You May Also Like</p>
       <div className="flex flex-wrap max-sm:justify-center gap-8">
-        {dummyShowsData.slice(0, 4).map((movie) => (
+        {shows.slice(0, 4).map((movie) => (
           <MovieCard movie={movie} key={movie._id} />
         ))}
       </div>

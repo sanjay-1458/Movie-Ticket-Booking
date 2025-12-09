@@ -1,35 +1,58 @@
 import { useEffect, useState } from "react";
-import { dummyBookingData } from "../../assets/assets";
+
 import Loading from "../../components/Loading/Loading";
 import BlurCircle from "../../components/BlurCircle/BlurCircle";
 import timeFormat from "../../lib/timeFormat";
 import dateFormat from "../../lib/dateFormat";
-import type { Movie } from "../MovieDetails/MovieDetails";
+import type Booking from "../../types/booking";
+import { useAppContext } from "../../context/AppContext";
+import toast from "react-hot-toast";
 
-export type BookingData = {
-  show: {
-    showDateTime: string;
-    movie: Movie;
-  };
-  amount: number;
-  bookedSeats: string[];
-  isPaid: boolean;
-};
+interface MyBookingsSuccess {
+  success: true;
+  bookings: Booking[];
+}
+
+interface MyBookingsError {
+  success: false;
+  message: string;
+}
+
+type MyBookingsAPIResponse = MyBookingsError | MyBookingsSuccess;
 
 function MyBookings() {
   const currency: string = import.meta.env.VITE_CURRENCY;
-
-  const [bookings, setBookings] = useState<BookingData[]>([]);
+  const { axios, image_base_url, user, getToken } = useAppContext();
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   const [isloading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getMyBookings = async () => {
-      setBookings(dummyBookingData);
+      try {
+        const token = await getToken();
+        const { data } = await axios.get<MyBookingsAPIResponse>(
+          "/api/user/bookings",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (data.success) {
+          setBookings(data.bookings);
+        } else {
+          toast.error("Error in fetching my bookings");
+        }
+      } catch (error) {
+        console.log("Error in fetching my bookings", error);
+      }
       setIsLoading(false);
     };
-    getMyBookings();
-  }, []);
+    if (user) {
+      getMyBookings();
+    }
+  }, [user]);
 
   return !isloading ? (
     <div
@@ -53,7 +76,7 @@ function MyBookings() {
           >
             <div className="flex flex-col md:flex-row">
               <img
-                src={item.show.movie.poster_path}
+                src={image_base_url + item.show.movie.poster_path}
                 alt="Movie Poster"
                 className="md:max-w-40
               max-w-30 aspect-video h-auto object-cover object-bottom rounded"

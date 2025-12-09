@@ -4,9 +4,9 @@
 
 It listen to the brwser URL, and based on the path it renders the correct component. It also uses the HTML5 history API so that we can move forward, backward in the application, and with no full page refresh.
 
-``` js
+```js
 <BrowserRouter>
-    <App />
+  <App />
 </BrowserRouter>
 ```
 
@@ -19,15 +19,15 @@ Without <Routes>, <Route> tags won’t work.
 
 <Route> tag tells the browsers when we are at a certain URL render this particular component.
 
-``` js
+```js
 <Route path = "/" element = {<Home/>}>
 ```
 
 If URL is "/" than render "Home" component.
 
-``` js
-"/movies/avengers"
-"/movies/prometheus"
+```js
+"/movies/avengers";
+"/movies/prometheus";
 ```
 
 In this type of routing when the parammeter is dynamic we use colon (":") and the page remains same but data get chnaged with respect to the parameters.
@@ -36,19 +36,19 @@ Anything that starts with a colon (:) is a URL parameter.
 
 We can further extends the movie with seclected movie than date:
 
-``` js
+```js
 /movies/5/2024-02-01
 /movies/10/2024-03-03
 ```
 
-``` js
+```js
 <Routes>
-    <Route path="/" element={<Home />} />
-    <Route path="/movies" element={<Movies />} />
-    <Route path="/movies/:id" element={<MovieDetails />} />
-    <Route path="/movies/:id/:date" element={<SeatLayout />} />
-    <Route path="/my-bookings" element={<MyBookings />} />
-    <Route path="/favorite" element={<Favorite />} />
+  <Route path="/" element={<Home />} />
+  <Route path="/movies" element={<Movies />} />
+  <Route path="/movies/:id" element={<MovieDetails />} />
+  <Route path="/movies/:id/:date" element={<SeatLayout />} />
+  <Route path="/my-bookings" element={<MyBookings />} />
+  <Route path="/favorite" element={<Favorite />} />
 </Routes>
 ```
 
@@ -70,7 +70,7 @@ It is another react hook but instead of just fetching the dynamic parametrs, it 
 
 useLocation() returns an object that describes the current URL.
 
-``` js
+```js
 {
   pathname: "/movies/12",
   search: "?date=2024-02-01",
@@ -81,14 +81,16 @@ useLocation() returns an object that describes the current URL.
 
 It can be used to check whether we are at "/admin" or not.
 
-``` js
+```js
 const isAdminRoute = useLocation().pathname.startsWith("/admin");
 ```
 
 Usage: NavBar is not displayed for Admin
 
-``` js
-{!isAdminRoute && <NavBar />}
+```js
+{
+  !isAdminRoute && <NavBar />;
+}
 ```
 
 ## Link
@@ -107,10 +109,10 @@ Case:
 
 With `useNavigate`, you can move the user to another route programmatically, such as after clicking a button, submitting a form, or running some logic.
 
-``` js
+```js
 const handleLogin = () => {
-   // do login logic...
-   navigate("/dashboard"); // redirect after login
+  // do login logic...
+  navigate("/dashboard"); // redirect after login
 };
 ```
 
@@ -118,13 +120,13 @@ const handleLogin = () => {
 
 Whenever the URL starts with `"/admin"`, the `Layout` component ini rendered, it contains a left-side bar from which admin can navigate, and we have nested routes where by default we render the `Dashboard` component, and on clicking to other sections, the dahboard area is replaced with others.
 
-``` js
+```js
 <Routes>
-  <Route path="/admin/*" element={<Layout/>}>
-     <Route index element={<Dashboard/>}/>
-     <Route path="add-shows" element={<AddShows/>}/>
-     <Route path="list-bookings" element={<ListBookings/>}/>
-     <Routes path="list-shows"element={<ListShows/>}/>
+  <Route path="/admin/*" element={<Layout />}>
+    <Route index element={<Dashboard />} />
+    <Route path="add-shows" element={<AddShows />} />
+    <Route path="list-bookings" element={<ListBookings />} />
+    <Routes path="list-shows" element={<ListShows />} />
   </Route>
 </Routes>
 ```
@@ -136,7 +138,7 @@ NavLink is also used for nagivation similar to `Link`, bute here we can highligh
 It detects whether the target route matches the URL and applices styling.
 It can be used when we can see multiple options and each option leads to different routing.
 
-``` js
+```js
 <NavLink
   to="/about"
   className={({ isActive }) => (isActive ? "active" : "")}

@@ -9,8 +9,8 @@ Used a `useState()` hook to open/close the NavBar for small screen. And based on
 The backgound image is set using property
 
 ```css
-.bg-image{
-    background-image:url(./backgroundImage.png)
+.bg-image {
+  background-image: url(./backgroundImage.png);
 }
 ```
 
@@ -28,15 +28,16 @@ This contains the movie cards with each card having:
 4. Buy ticket option and rating
 
 The cards recieves the following props:
+
 ```js []
 type MovieCardProps = {
-  _id: string;
-  title: string;
-  backdrop_path: string;
-  release_date: string;
-  genres: { id: number; name: string }[];
-  runtime: number;
-  vote_average: number;
+  _id: string,
+  title: string,
+  backdrop_path: string,
+  release_date: string,
+  genres: { id: number, name: string }[],
+  runtime: number,
+  vote_average: number,
 };
 ```
 
@@ -54,22 +55,22 @@ Trailers section conatins the `react-player` such that user can see any trailer 
 
 User can view other trailers from list and can select any of them to play.
 
-The trailer list has a CSS property where on hovering anyone trailer, all other trailer gets dull. 
-This is achived by `group` and `group-hover`  class in Tailwind.
+The trailer list has a CSS property where on hovering anyone trailer, all other trailer gets dull.
+This is achived by `group` and `group-hover` class in Tailwind.
 
 1. group:
-It is a Tailwind utility class, which we assign to parent and child can respond to `group-hover`
+   It is a Tailwind utility class, which we assign to parent and child can respond to `group-hover`
 
 2. group-hover:
-The action we do for a particular element when parent is hovered.
+   The action we do for a particular element when parent is hovered.
 
-``` js
+```js
 <div class="group">
   <p class="group-hover:text-red-500">Paragraph A</p>
   <p class="group-hover:text-blue-500">Paragraph B</p>
 </div>
-
 ```
+
 Here on hovering on `div` the para changes to their respective color.
 
 To remove parent hover when we hover on an element use: `group-hover:not-hover` so that the parent hover is ignored on the hovered element.
@@ -87,7 +88,6 @@ This making URL : `"/movies/:id/:date"`
 
 <img src="../../frontend/public/movie-booking-naviagtion.png" alt="Clerk Preview" width="200">
 
-
 ## Seat Layout
 
 The seat layout is designed with unqiue row + col, and its data is stored in the state for interaction with database.
@@ -104,7 +104,7 @@ With this section, admin can add shows for multiple date and time, the data for 
 
 Here, admin can set price, select a date, and check the selcted date list for all movies, using controlled input.
 
-``` js
+```js
 const [selectedMovie, setSelectedMovie] = useState<number>(0);
 
 const [dateTimeSelection, setDateTimeSelection] = useState<Record<string, string[]>>({});
