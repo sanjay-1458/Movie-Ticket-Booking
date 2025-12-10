@@ -7,6 +7,7 @@ import dateFormat from "../../lib/dateFormat";
 import type Booking from "../../types/booking";
 import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 interface MyBookingsSuccess {
   success: true;
@@ -100,13 +101,14 @@ function MyBookings() {
                 </p>
 
                 {!item.isPaid ? (
-                  <button
+                  <Link
+                    to={"" + item.paymentLink}
                     className="bg-primary px-4 py-1.5 mb-3 text-sm rounded-full font-medium 
               hover:bg-primary/90 transition
               cursor-pointer"
                   >
                     Pay Now
-                  </button>
+                  </Link>
                 ) : (
                   <button className="bg-primary/30 px-4 py-1.5 mb-3 text-sm rounded-full font-medium cursor-pointer">
                     Paid
