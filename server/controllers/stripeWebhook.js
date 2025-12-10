@@ -20,24 +20,24 @@ export const stripeWebhooks = async (req, res) => {
 
   try {
     switch (event.type) {
-      case "payment_intent.succeeded":
-        {
-          const paymentIntent = event.data.object;
-          const sessionList = await stripeInstance.checkout.sessions.list({
-            payment_intent: paymentIntent.id,
-          });
+      case "payment_intent.succeeded": {
+        const paymentIntent = event.data.object;
+        const sessionList = await stripeInstance.checkout.sessions.list({
+          payment_intent: paymentIntent.id,
+        });
 
-          const session = sessionList.data[0];
-          const { bookingId } = session.metadata;
+        const session = sessionList.data[0];
+        const { bookingId } = session.metadata;
 
-          await Booking.findByIdAndUpdate(bookingId, {
-            isPaid: true,
-            paymentLink: "",
-          });
-          break;
-        }
+        await Booking.findByIdAndUpdate(bookingId, {
+          isPaid: true,
+          paymentLink: "",
+        });
+        break;
+      }
 
-        deafult: console.log("Unhandled Event Type", event.type);
+      default:
+        console.log("Unhandled Event Type", event.type);
     }
     res.json({
       received: true,
