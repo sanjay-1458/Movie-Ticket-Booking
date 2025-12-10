@@ -56,7 +56,7 @@ const syncUserUpdation = inngest.createFunction(
 // Inngest function to cancel booking and release seats of shows after 10 minutes, when payment is not done
 
 const releaseSeatsAndDeleteBooking = inngest.createFunction(
-  { id: "release-seats-delete-bookings" },
+  { id: "release-seats-release-bookings" },
   {
     event: "app/checkpayment",
   },
