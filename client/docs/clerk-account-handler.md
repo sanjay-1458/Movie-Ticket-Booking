@@ -3,7 +3,7 @@
 Clerk is used for user sign in / sign up, we can set what user can create account with like: "Email", "Phone number", etc.
 
 Clerk Preview:<br>
-<img src="../../frontend/public/clerkPreview.png" alt="Clerk Preview" height="300">
+<img src="../../client/public/clerkPreview.png" alt="Clerk Preview" height="300">
 
 ---
 
@@ -22,4 +22,4 @@ With Clerk, we can login in using Google account along side navigating to other 
 </UserButton>
 ```
 
-<img src="../../frontend/public/clerk-menu.png" alt="Clerk Preview" height="200">
+<img src="../../client/public/clerk-menu.png" alt="Clerk Preview" height="200">

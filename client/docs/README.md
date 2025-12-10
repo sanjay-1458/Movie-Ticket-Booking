@@ -27,6 +27,13 @@ How clerk is used for login / sign-in.
 
 ---
 
+### 🔹 Role
+
+**File:** `role-based-control.md` [Link](role-based-control.md)<br>
+Seperate normal users from admin.
+
+---
+
 ### 🔹 Routing
 
 **File:** `routing.md` [Link](routing.md)<br>

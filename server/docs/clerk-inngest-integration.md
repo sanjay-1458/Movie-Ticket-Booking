@@ -48,7 +48,17 @@ Clerk sends an HTTP request when something happens in our application.
 
 ## Inngest
 
-Inngest is a serverless system that react to certain events. Like on new user sign-in clerk sents notificationa or events and inngest perform action like running a function.
+Inngest is a serverless system that react to certain events. Like on new user sign-in clerk sents notificationa or events and inngest perform action like running a function.<br>
+
+### Why Needed?
+
+Its a durable evnt-driven working system and it is designed for tasks that must succeed, even if servers restart, APIs fail, or timing is involved.
+
+Without it we will send request to Stripe until the payment doesn't validate. If server restart all scheduled work will be lost.
+
+With Inngest the function re-runs on failure, resumes where it is left. Inngest reduced coupling between user triggerd events and backend logic.
+
+Without Inngest we need to build `Message Queue` like Kafka, `Retry Logic`, `Scheduler`, `State Persistence`, etc
 
 ## Clerk + Inngest
 
@@ -113,3 +123,13 @@ We also add favorite movie data in `Clerk User Private Metadata` as additonal da
 const user = await clerkClient.users.getUser(userId);
 user.privateMetadata.favorite.push(movieId);
 ```
+
+## Reserving Seats
+
+When user first books a seat, we trigger an Inngest funtion: `releaseSeatsAndDeleteBooking` with event name: `app/checkpayment`.
+
+This event will automatically handled by Inngest when server is live.<br>
+The Inngest need the server URL to observe the event and act occurdingly.
+<img src="../public/inngest-function.png" width="590">
+
+When user first book a movie, the `bookingId` is sent and trigeer the release movie event after 10 minutes, after 10 minutes we check whether the user has paid for the booking or not. If the booking is not paid after 10 minutes we delete the seats occupied aloong with the show from user bookings.

@@ -43,7 +43,7 @@ type MovieCardProps = {
 
 On clicking any card, user will be routed to that movie URL which is in format `"/movies/:id"`
 
-<img src="../../frontend/public/card-image.png" alt="Clerk Preview" height="200">
+<img src="../../client/public/card-image.png" alt="Clerk Preview" height="200">
 
 ## Blur Circle
 
@@ -75,24 +75,24 @@ Here on hovering on `div` the para changes to their respective color.
 
 To remove parent hover when we hover on an element use: `group-hover:not-hover` so that the parent hover is ignored on the hovered element.
 
-<img src="../../frontend/public/trailer-hover.png" alt="Clerk Preview" height="90">
+<img src="../../client/public/trailer-hover.png" alt="Clerk Preview" height="90">
 
 ## Movie Details Page
 
 Based on the params from the URL, `/movies/:id`, the `{id}` is captured and based on the id, the data is rendered. This component contains `Watch Trailer`, `Add to Favorite`, `Buying Ticket Option` with `Casts` and other movie deatails.
 
-<img src="../../frontend/public/movie-details.png" alt="Clerk Preview" width="300">
+<img src="../../client/public/movie-details.png" alt="Clerk Preview" width="300">
 
 When user pick a date and books ticket, they are naviagted to seat-selection page for further process.
 This making URL : `"/movies/:id/:date"`
 
-<img src="../../frontend/public/movie-booking-naviagtion.png" alt="Clerk Preview" width="200">
+<img src="../../client/public/movie-booking-naviagtion.png" alt="Clerk Preview" width="200">
 
 ## Seat Layout
 
 The seat layout is designed with unqiue row + col, and its data is stored in the state for interaction with database.
 
-<img src="../../frontend/public/seat-layout.png" alt="Clerk Preview" width="210">
+<img src="../../client/public/seat-layout.png" alt="Clerk Preview" width="210">
 
 ## Admin Control
 
@@ -105,13 +105,15 @@ With this section, admin can add shows for multiple date and time, the data for 
 Here, admin can set price, select a date, and check the selcted date list for all movies, using controlled input.
 
 ```js
-const [selectedMovie, setSelectedMovie] = useState<number>(0);
+const [nowPlayingMovies, setNowPlayingMovies] = useState<Movie[]>([]);
+
+const [selectedMovie, setSelectedMovie] = useState<number | null>(null);
 
 const [dateTimeSelection, setDateTimeSelection] = useState<Record<string, string[]>>({});
 
-const [dateTimeInput, setDateTimeInput] = useState("");
+const [dateTimeInput, setDateTimeInput] = useState<string>("");
 
-const [showPrice, setShowPrice] = useState("");
+const [showPrice, setShowPrice] = useState<string>("");
 ```
 
-<img src="../../frontend/public/new-movies.png" alt="Clerk Preview" width="210">
+<img src="../../client/public/new-movies.png" alt="Clerk Preview" width="210">

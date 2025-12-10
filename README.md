@@ -3,7 +3,9 @@
 This is a `Movie-Ticket-Booking` application, where user can book tickets for specific movie, with their desired seats.
 The admin can set shows, view the booked seats also motior the earning of each movie.
 
-This project is written with `React`. `TypeScript`, `Node`, `Express`, `MongoDB`. Along with the unit test using `Vitest` & `React-Testing-Library`
+This project is written with `React`. `TypeScript`, `Node`, `Express`, `MongoDB`. Along with the unit test using `Vitest` & `React-Testing-Library`.
+
+This application provides feature like adding movies to favorites, booking seats without dealing with double bookings, reserving the booking seats for `10 minutes` if user fail to make payment.
 
 It uses:
 
@@ -19,18 +21,24 @@ It uses:
       <td>Clerk</td>
       <td>User authentication</td>
     </tr>
+    <tr>
+      <td>Inngest</td>
+      <td>Triggering a function</td>
+    </tr>
+    <tr>
+      <td>Inngest</td>
+      <td></td>
+    </tr>
   </tbody>
 </table>
 
-The documentation for FrontEnd and BackEnd like `Product Design`, `API Documentation`, `Routing`, etc. can be found in their respective section, or you can just see below for the respective documentation.
 
-<a href="/frontend/README.md" style="text-decoration:none;">
-  <img src="https://img.shields.io/badge/Frontend-Docs-1f6fe0?style=for-the-badge">
-</a>
-<br>
-<a href="/backend/README.md/" style="text-decoration:none;">
-  <img src="https://img.shields.io/badge/Backend-Docs-1f6fe0?style=for-the-badge">
-</a>
+
+---
+
+<strong>UML Diagram:</strong><br>
+
+<img src="./server/public/uml-design.png" width="680">
 
 ---
 
@@ -38,70 +46,29 @@ The documentation for FrontEnd and BackEnd like `Product Design`, `API Documenta
 
 # Frontend Documentation
 
-This section of the project contains all the documentation you need to understand how the frontend is structured and how each part works including component, logic, routing, etc.
+This section of the project contains all the documentation you need to unders tand how the frontend is structured and how each part works including component, logic, routing, etc.
 
----
+[![Client](https://img.shields.io/badge/Client-README-blue?style=for-the-badge)](/client/README.md)
 
-## Documentation Overview
 
-### 🔹 MISC
 
-**File:** `/frontend/docs/ui.md` [Link](/frontend/docs/misc.md)<br>
-This document covers all the UI used apart from components.
 
----
+# Backend Documentation
 
-### 🔹 Pages
+This section conatins the dcumenation of all the things used in the creation of the backend service along with their need and use.
 
-**File:** `/frontend/docs/pages.md` [Link](/frontend/docs/pages.md)<br>
-This conatins the page-level structures: how pages are organized, how layouts work, and how each page ties into routing and the overall UI.
+[![Server](https://img.shields.io/badge/Server-README-blue?style=for-the-badge)](/server/README.md)
 
----
 
-### 🔹 Clerk
-
-**File:** `/frontend/docs/clerk-account-handler.md` [Link](/frontend/docs/clerk-account-handler.md)<br>
-How clerk is used for login / sign-in.
-
----
-
-### 🔹 Components
-
-**File:** `/frontend/docs/components.md` [Link](/frontend/docs/components.md)<br>
-This contains all the component used in the application with their usage.
-
----
-
-### 🔹 Notification
-
-**File:** `/frontend/docs/notification.md` [Link](/frontend/docs/notification.md)<br>
-Everything related to the global notification system it trigger messages, the different notification types, and styling.
-
----
-
-### 🔹 Implementation
-
-**File:** `/frontend/docs/implementation.md` [Link](/frontend/docs/implementation.md)<br>
-This is the in-depth document of how the app interact among componet level and logic implementation. It walks through the internal logic, patterns, API handeling and overall architecture of the frontend.
-
----
-
-### 🔹 Product Design
-
-**File:** `/frontend/docs/product-design.md` [Link](/frontend/docs/product-design.md)<br>
-This contains what the product is supposed to do, how user interacts and features available.
-
----
-
-## Running the Frontend
+## Running the client
 
 1. Go to the project directory
 
 ```
-cd ".\frontend"
+cd ".\client"
 ```
 
-To be in the `frontend` repo.
+To be in the `client` repo.
 
 2. Install dependencies
 
@@ -186,6 +153,33 @@ You will get a message that process is terminated, and to verify it again check 
 
 8.  `/F`:
     Forces the process to terminate. Without `/F` the process might not terminate.
+
+## Running the server
+
+1. Go to the project directory
+
+```
+cd ".\server"
+```
+
+To be in the `server` repo.
+
+2. Install dependencies
+
+```
+npm install
+```
+
+3. Run the application
+
+```
+node server.js
+```
+
+This will run the application in `localhost:3000`.
+As that port is set by default.
+
+---
 
 <a href="https://greatstack.dev/p/quickshow" style="text-decoration:none;">
   <img src="https://img.shields.io/badge/Credits-GreatStack-ff6f61?style=for-the-badge">

@@ -116,7 +116,7 @@ To remove parent hover when we hover on an element use: `group-hover:not-hover` 
 On hovering parent only and no child, every child get their `opacity-50`.
 When a child if hovered we don't apply the `opacity-50` property.
 
-<img src="../../frontend/public/trailer-hover.png" alt="Clerk Preview" height="80">
+<img src="../../client/public/trailer-hover.png" alt="Clerk Preview" height="80">
 
 ## Showing Casts Horizontally
 
@@ -125,7 +125,7 @@ Using Tailwind CSS class of:
 1. `overflow-x-auto`: We can scroll horizontally, it is usefull for showing casts, while staying at same viewport.
 2. `scrollbar-width: none;`: This CSS property is used for hiding the scroll bar.
 
-<img src="../../frontend/public/cast-linear.png" alt="Clerk Preview" height="80">
+<img src="../../client/public/cast-linear.png" alt="Clerk Preview" height="80">
 
 ## Admin
 
@@ -176,15 +176,22 @@ if (filteredTimes.length === 0) {
 }
 ```
 
-<img src="../../frontend/public/new-movies.png" alt="Clerk Preview" width="210">
+<img src="../../client/public/new-movies.png" alt="Clerk Preview" width="210">
 
 Showing the selcedt date-time section only when there is something in the state.
 
-<img src="../../frontend/public/new-movie-list.png" alt="Clerk Preview" width="210">
+<img src="../../client/public/new-movie-list.png" alt="Clerk Preview" width="210">
 
 Using `group` and `group-hover:not-hover:{some-property}`.
 We can make other movie cards dull and highlight the current movie.
 
 It works by, when we add a `group` class to parent and `group-hover` to child, than on hvering parent every child `group-hover` is activated, but if we want only the current card should not be affected than we use `not-hover`, thus when we hover a current card, every other card get `{some-property}` from `group-hover:not-hover:{some-property}` except the current one.
 
-<img src="../../frontend/public/movie-group.png" alt="Clerk Preview" width="210">
+<img src="../../client/public/movie-group.png" alt="Clerk Preview" width="210">
+
+## Favorites
+
+We can store the favorite movies for a user in the `Clerk Private Metadata`, and we can easily fetch it as when user logged in the cler provides a way to access userId from: `req.auth()`, this helps us in reducing API calls to database and storage of those data.
+
+
+<img src="../../client/public/role-user.png" alt="Clerk Preview" width="210">
