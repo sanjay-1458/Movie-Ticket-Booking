@@ -20,11 +20,15 @@ await connectDB();
 
 // Stripe Route
 
-// app.use('/api/stripe',express.raw({type:'application/json'}),stripeWebhooks)
+app.post(
+  "/api/stripe",
+  express.raw({ type: "application/json" }),
+  stripeWebhooks
+);
+app.use(express.json());
 
 // Middleware
 
-app.use(express.json());
 app.use(cors());
 app.use(clerkMiddleware());
 
