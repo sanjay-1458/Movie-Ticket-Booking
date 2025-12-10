@@ -16,6 +16,7 @@ import ListShows from "./pages/admin/ListShows.tsx";
 
 import { SignIn } from "@clerk/clerk-react";
 import { useAppContext } from "./context/AppContext.tsx";
+import Loading from "./components/Loading/Loading.tsx";
 
 function App() {
   const isAdminRoute = useLocation().pathname.startsWith("/admin");
@@ -31,6 +32,8 @@ function App() {
         <Route path="/movies/:id" element={<MovieDetails />} />
         <Route path="/movies/:id/:date" element={<SeatLayout />} />
         <Route path="/my-bookings" element={<MyBookings />} />
+
+        <Route path="/loading/:nextUrl" element={<Loading/>}/>
         <Route path="/favorite" element={<Favorite />} />
 
         <Route path="/admin/*" element={user ? <Layout />:(

@@ -55,7 +55,6 @@ function SeatLayout() {
     null
   );
 
-  const navigate = useNavigate();
 
   const groupRows: string[][] = [
     ["A", "B"],
@@ -141,8 +140,7 @@ function SeatLayout() {
         }
       );
       if (data.success) {
-        toast.success(data.message);
-        navigate("/my-bookings");
+        window.location.href=data.url;
       } else {
         toast.error(data.message);
       }
