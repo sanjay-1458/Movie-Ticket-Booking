@@ -1,9 +1,11 @@
+import { assets } from "../../assets/assets";
+
 function Footer() {
   return (
     <div className="px-6 md:px-16 lg:px-24 xl:px-44 py-20 overflow-hidden flex flex-col gap-4 ">
       <div className="flex gap-4">
         <div className="flex-2 flex flex-col text-xs gap-4 text-gray-400">
-          <img src="src/assets/logo.svg" alt="Logo" className="w-25" />
+          <img src={assets.logo} alt="Logo" className="w-25" />
           <p className="max-w-md">
             Lorem ipsum dolor, sit amet consectetur adipisicing elit. Assumenda
             alias eius hic voluptatum cum vitae pariatur fugit totam nesciunt,
@@ -11,12 +13,12 @@ function Footer() {
           </p>
           <div className="flex gap-4">
             <img
-              src="src/assets/googlePlay.svg"
+              src={assets.googlePlay}
               alt="Google Play"
               className="w-20"
             />
             <img
-              src="src/assets/appStore.svg"
+              src={assets.appStore}
               alt="App Store"
               className="w-20"
             />
