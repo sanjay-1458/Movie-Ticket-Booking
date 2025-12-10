@@ -5,17 +5,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import type Movie from "../types/movie";
 
-
 interface AppContextType {
   axios: typeof axios;
   fetchIsAdmin: () => Promise<void>;
   getToken: () => Promise<string | null>;
   navigate: ReturnType<typeof useNavigate>;
   isAdmin: boolean;
-  user:unknown;
+  user: unknown;
   shows: Movie[];
   favoriteMovies: Movie[];
-  image_base_url:string;
+  image_base_url: string;
   fetchFavoriteMovies: () => Promise<void>;
 }
 
@@ -27,12 +26,28 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [shows, setShows] = useState<Movie[]>([]);
   const [favoriteMovies, setFavoriteMovies] = useState<Movie[]>([]);
-  const image_base_url=import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
+  const image_base_url = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
 
   const { user } = useUser();
   const { getToken } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchShows = async () => {
+      try {
+        const { data } = await axios.get("/api/show/all");
+        if (data.success) {
+          setShows(data.shows);
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        console.error("Error is fetching shows for client", error);
+      }
+    };
+    fetchShows();
+  }, []);
 
   const fetchIsAdmin = async () => {
     try {
@@ -51,31 +66,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("Error is app provider", error);
     }
   };
-
-  useEffect(() => {
-    if (user) {
-      fetchFavoriteMovies();
-      fetchIsAdmin();
-    }
-  }, [user]);
-
-  const fetchShows = async () => {
-    try {
-      const { data } = await axios.get("/api/show/all");
-      if (data.success) {
-        setShows(data.shows);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      console.error("Error is fetching shows for client", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchShows();
-  }, []);
-
   const fetchFavoriteMovies = async () => {
     try {
       const { data } = await axios.get("/api/user/favorites", {
@@ -93,6 +83,12 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("Error is fetching favorites for client", error);
     }
   };
+  useEffect(() => {
+    if (user) {
+      fetchFavoriteMovies();
+      fetchIsAdmin();
+    }
+  }, [user]);
 
   const value = {
     axios,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { assets } from "../../assets/assets";
 
 import Loading from "../../components/Loading/Loading";
@@ -55,7 +55,6 @@ function SeatLayout() {
     null
   );
 
-
   const groupRows: string[][] = [
     ["A", "B"],
     ["C", "D"],
@@ -89,12 +88,6 @@ function SeatLayout() {
         <div className="flex flex-wrap items-center justify-center gap-2">
           {Array.from({ length: col }, (_, i) => {
             const seatId = `${row}${i + 1}`;
-            // {
-            //   console.log("occupied seats:", occupiedSeats);
-            // }
-            // {
-            //   console.log("current seat:", seatId);
-            // }
 
             return (
               <button
@@ -140,7 +133,7 @@ function SeatLayout() {
         }
       );
       if (data.success) {
-        window.location.href=data.url;
+        window.location.href = data.url;
       } else {
         toast.error(data.message);
       }
@@ -148,29 +141,30 @@ function SeatLayout() {
       console.log("Error in boooking tickets", error);
     }
   };
+
   useEffect(() => {
+    const getOccupiedSeats = async () => {
+      try {
+        if (!selectedTime) {
+          return toast.error("Please select a time");
+        }
+        const { data } = await axios.get<GetOccupiedSeatsAPIResponse>(
+          `/api/booking/seats/${selectedTime.showId}`
+        );
+
+        if (data.success) {
+          setOccupiedSeats(data.occupiedSeats);
+        } else {
+          toast.error("Falied to load booked seats");
+        }
+      } catch (error) {
+        console.log("Error in fetching occupied seats data", error);
+      }
+    };
     if (selectedTime) {
       getOccupiedSeats();
     }
   }, [selectedTime]);
-  const getOccupiedSeats = async () => {
-    try {
-      if (!selectedTime) {
-        return toast.error("Please select a time")
-      }
-      const { data } = await axios.get<GetOccupiedSeatsAPIResponse>(
-        `/api/booking/seats/${selectedTime.showId}`
-      );
-
-      if (data.success) {
-        setOccupiedSeats(data.occupiedSeats);
-      } else {
-        toast.error("Falied to load booked seats");
-      }
-    } catch (error) {
-      console.log("Error in fetching occupied seats data", error);
-    }
-  };
 
   useEffect(() => {
     const getShow = async () => {
@@ -209,7 +203,6 @@ function SeatLayout() {
             return (
               <div
                 onClick={() => {
-                  console.log(item.showId, item.time);
                   setSelectedTime({
                     showId: item.showId,
                     time: item.time,

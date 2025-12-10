@@ -45,7 +45,7 @@ function ListBookings() {
           toast.error("Failed to fetch bookings");
         }
       } catch (error) {
-        console.log("Error in fetchng all booking data");
+        console.log("Error in fetchng all booking data",error);
       }
 
       setIsLoading(false);

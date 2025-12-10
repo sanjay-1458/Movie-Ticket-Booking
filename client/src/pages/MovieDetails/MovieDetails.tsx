@@ -78,7 +78,6 @@ function MovieDetails() {
             },
           }
         );
-        console.log(data);
         if (data.success) {
           setShow({ movie: data.movie, dateTime: data.dateTime });
         } else {

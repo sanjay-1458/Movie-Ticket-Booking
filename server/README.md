@@ -72,6 +72,13 @@ Explains how the backend server initializes, loads configuration, registers midd
 
 ---
 
+### 🔹 Notification
+
+**File:** `docs/notification.md` [Link](docs/notification.md)<br>
+We send notification when user pay for a show, reminder for a show.
+
+---
+
 ### 🔹 Stripe Integration
 
 **File:** `/docs/stripe-integration.md` [Link](docs/stripe-integration.md)<br>

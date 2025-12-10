@@ -32,7 +32,7 @@ export const getNowPlayingMovies = async (req, res) => {
     res.json({ success: true, movies: movies });
     cacheTime = Date.now();
     cachedMovies = data.results;
-    console.log("movie", movies[0]);
+    
   } catch (error) {
     console.log("Error in fetching now playing movies", error);
 
@@ -180,7 +180,6 @@ export const getShow = async (req, res) => {
     });
 
     res.json({ success: true, movie, dateTime });
-    console.log("fetched")
   } catch (error) {
     console.log("Error in loading detail of single movie", error.message);
     res.json({ success: false, message: error.message });

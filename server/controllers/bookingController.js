@@ -101,9 +101,9 @@ export const createBooking = async (req, res) => {
 export const getOccupiedSeats = async (req, res) => {
   try {
     const { showId } = req.params;
-    console.log("inside geto");
+    
     const showData = await Show.findById(showId);
-    console.log("found show id");
+    
 
     const occupiedSeats = Object.keys(showData.occupiedSeats);
 
