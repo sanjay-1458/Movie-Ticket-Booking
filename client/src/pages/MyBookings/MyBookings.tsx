@@ -103,9 +103,7 @@ function MyBookings() {
                 {!item.isPaid ? (
                   <Link
                     to={"" + item.paymentLink}
-                    className="bg-primary px-4 py-1.5 mb-3 text-sm rounded-full font-medium 
-              hover:bg-primary/90 transition
-              cursor-pointer"
+                    className="bg-primary px-4 py-1.5 mb-3 text-sm rounded-full font-medium hover:bg-primary/90 transition cursor-pointer inline-flex items-center whitespace-nowrap"
                   >
                     Pay Now
                   </Link>

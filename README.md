@@ -26,8 +26,12 @@ It uses:
       <td>Triggering a function</td>
     </tr>
     <tr>
-      <td>Inngest</td>
-      <td></td>
+      <td>Stripe</td>
+      <td>Payment integration</td>
+    </tr>
+    <tr>
+      <td>Nodemailer</td>
+      <td>Sending mails; SMTP</td>
     </tr>
   </tbody>
 </table>
