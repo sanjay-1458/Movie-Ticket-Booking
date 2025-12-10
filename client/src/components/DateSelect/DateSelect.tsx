@@ -3,7 +3,11 @@ import BlurCircle from "../BlurCircle/BlurCircle";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { type DateTime } from "../../pages/MovieDetails/MovieDetails";
+
+
+interface DateTime {
+  [date: string]: { time: string; showId: string }[];
+}
 
 function DateSelect({ dateTime, id }: { dateTime: DateTime; id: string }) {
   const [selectedDate, setSelectedDate] = useState<string>("");
