@@ -129,7 +129,7 @@ export const addShow = async (req, res) => {
     }
     res.json({ success: true, message: "Show Added Successfully" });
   } catch (error) {
-    console.log("Failed to fetcj movie details. Try agin later.", error);
+    console.log("Failed to fetch movie details. Try agin later.", error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -148,7 +148,7 @@ export const getShows = async (req, res) => {
 
     return res.json({ success: true, shows: Array.from(uniqueShows) });
   } catch (error) {
-    console.log("Error in loading shows to display movie list", error.essage);
+    console.log("Error in loading shows to display movie list", error.message);
     res.json({ success: false, message: error.message });
   }
 };
@@ -182,7 +182,7 @@ export const getShow = async (req, res) => {
     res.json({ success: true, movie, dateTime });
     console.log("fetched")
   } catch (error) {
-    console.log("Error in loading detail of single movie", error.essage);
+    console.log("Error in loading detail of single movie", error.message);
     res.json({ success: false, message: error.message });
   }
 };

@@ -90,12 +90,12 @@ function SeatLayout() {
         <div className="flex flex-wrap items-center justify-center gap-2">
           {Array.from({ length: col }, (_, i) => {
             const seatId = `${row}${i + 1}`;
-            {
-              console.log("occupied seats:", occupiedSeats);
-            }
-            {
-              console.log("current seat:", seatId);
-            }
+            // {
+            //   console.log("occupied seats:", occupiedSeats);
+            // }
+            // {
+            //   console.log("current seat:", seatId);
+            // }
 
             return (
               <button
@@ -157,8 +157,11 @@ function SeatLayout() {
   }, [selectedTime]);
   const getOccupiedSeats = async () => {
     try {
+      if (!selectedTime) {
+        return toast.error("Please select a time")
+      }
       const { data } = await axios.get<GetOccupiedSeatsAPIResponse>(
-        `/api/bookings/seats/${selectedTime?.showId}`
+        `/api/booking/seats/${selectedTime.showId}`
       );
 
       if (data.success) {
@@ -208,6 +211,7 @@ function SeatLayout() {
             return (
               <div
                 onClick={() => {
+                  console.log(item.showId, item.time);
                   setSelectedTime({
                     showId: item.showId,
                     time: item.time,
