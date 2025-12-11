@@ -60,13 +60,13 @@ function NavBar() {
         </Link>
 
         <Link
-          to="/releases"
+          to="/my-bookings"
           onClick={() => {
             scrollTo(0, 0);
             setIsOpen(false);
           }}
         >
-          Releases
+          Bookings
         </Link>
         {favoriteMovies.length > 0 && (
           <Link
