@@ -1,35 +1,17 @@
 pipeline {
-  agent any
+    agent any
 
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
-    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
-    stage('Build Images') {
-      steps {
-        sh 'docker compose build'
-      }
+        stage('Build & Run with Docker Compose') {
+            steps {
+                sh 'docker compose up --build -d'
+            }
+        }
     }
-
-    stage('Deploy Containers') {
-      steps {
-        sh '''
-          docker compose down
-          docker compose up -d
-        '''
-      }
-    }
-  }
-
-  post {
-    success {
-      echo "Deployment successful."
-    }
-    failure {
-      echo "Deployment failed."
-    }
-  }
 }
