@@ -1,45 +1,57 @@
+import mongoose from "mongoose"; 
 import { inngest } from "../inngest/index.js";
 import Booking from "../models/Booking.js";
 import Show from "../models/Show.js";
 import stripe from "stripe";
 
-// Function to check availabilty of seats
-const checkSeatAvailability = async (showId, selectedSeats) => {
+// Function to check availability of seats (Updated to accept session)
+const checkSeatAvailability = async (showId, selectedSeats, session) => {
   const clash = await Show.findOne({
     _id: showId,
     $or: selectedSeats.map((seat) => ({
       [`occupiedSeats.${seat}`]: { $exists: true },
     })),
-  });
+  }).session(session); // Bind to session
 
   return !clash;
 };
 
 // Creating booking data
-
 export const createBooking = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const { userId } = req.auth();
     const { showId, selectedSeats } = req.body;
     const { origin } = req.headers;
 
-    const available = await checkSeatAvailability(showId, selectedSeats);
+    // 1. ATOMIC SECTION: Check & Reserve Seats
+    const available = await checkSeatAvailability(showId, selectedSeats, session);
+    
     if (!available) {
+      await session.abortTransaction();
+      session.endSession();
       return res.json({
         success: false,
-        message: "Selected seats are not vailable",
+        message: "Selected seats are not available",
       });
     }
 
-    const showData = await Show.findById(showId).populate("movie");
+    const showData = await Show.findById(showId).session(session).populate("movie");
 
-    // Create booking
-    const booking = await Booking.create({
-      user: userId,
-      show: showId,
-      amount: showData.showPrice * selectedSeats.length,
-      bookedSeats: selectedSeats,
-    });
+    // Create booking (Using array syntax for transaction support)
+    const [booking] = await Booking.create(
+      [
+        {
+          user: userId,
+          show: showId,
+          amount: showData.showPrice * selectedSeats.length,
+          bookedSeats: selectedSeats,
+        },
+      ],
+      { session }
+    );
 
     // Update seats atomically
     for (const seat of selectedSeats) {
@@ -47,13 +59,14 @@ export const createBooking = async (req, res) => {
     }
 
     showData.markModified("occupiedSeats");
-    await showData.save();
+    await showData.save({ session });
 
-    // Stripe payment
+    // Commit the DB changes immediately to release locks
+    await session.commitTransaction();
+    session.endSession();
 
+    // 2. EXTERNAL PROCESS: Stripe Payment (Outside transaction to avoid timeouts)
     const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
-
-    // Line items for stripe
 
     const line_items = [
       {
@@ -68,7 +81,7 @@ export const createBooking = async (req, res) => {
       },
     ];
 
-    const session = await stripeInstance.checkout.sessions.create({
+    const stripeSession = await stripeInstance.checkout.sessions.create({
       success_url: `${origin}/loading/my-bookings`,
       cancel_url: `${origin}/my-bookings`,
       line_items: line_items,
@@ -76,14 +89,14 @@ export const createBooking = async (req, res) => {
       metadata: {
         bookingId: booking._id.toString(),
       },
-      expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 minute seesion
+      expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 minute session
     });
 
-    booking.paymentLink = session.url;
+    // Save the payment link to the booking (Standard save, no transaction needed now)
+    booking.paymentLink = stripeSession.url;
     await booking.save();
 
     // Triggering Inngest scheduler
-
     await inngest.send({
       name: "app/checkpayment",
       data: {
@@ -91,8 +104,15 @@ export const createBooking = async (req, res) => {
       },
     });
 
-    return res.json({ success: true, url: session.url });
+    return res.json({ success: true, url: stripeSession.url });
+
   } catch (error) {
+    // Abort transaction on any error
+    if (session.inTransaction()) {
+        await session.abortTransaction();
+    }
+    session.endSession();
+    
     console.log("Booking error:", error);
     return res.json({ success: false, message: error.message });
   }
@@ -101,9 +121,8 @@ export const createBooking = async (req, res) => {
 export const getOccupiedSeats = async (req, res) => {
   try {
     const { showId } = req.params;
-    
+
     const showData = await Show.findById(showId);
-    
 
     const occupiedSeats = Object.keys(showData.occupiedSeats);
 
