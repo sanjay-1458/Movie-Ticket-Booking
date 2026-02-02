@@ -1,25 +1,36 @@
 import { clerkClient } from "@clerk/express";
 
-import Booking from "../models/Booking.js";
-import Movie from "../models/Movie.js";
+import { prisma } from "../prisma/client.js";
 
 // API function to get user bookings
 
 export const getUserBookings = async (req, res) => {
   try {
-    const user = req.auth().userId;
+    const userId = req.auth().userId;
 
-    const bookings = await Booking.find({ user })
-      .populate({
-        path: "show",
-        populate: { path: "movie" },
-      })
-      .sort({ createdAt: -1 });
+    const bookings = await prisma.booking.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        show: {
+          include: {
+            movie: true,
+          },
+        },
+        seats: true,
+      },
+    });
 
-    res.json({ success: true, bookings });
+    // 🔴 IMPORTANT: keep frontend unchanged
+    const formattedBookings = bookings.map((b) => ({
+      ...b,
+      bookedSeats: b.seats.map((s) => s.seatNo),
+    }));
+
+    res.json({ success: true, bookings: formattedBookings });
   } catch (error) {
-    console.log("Error in fetching users booking", error.message);
-    res.json({ success: false, message: error.message });
+    console.error("Error in fetching users booking", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -39,7 +50,7 @@ export const updateFavorite = async (req, res) => {
       user.privateMetadata.favorite.push(movieId);
     } else {
       user.privateMetadata.favorite = user.privateMetadata.favorite.filter(
-        (movie) => movie !== movieId
+        (movie) => movie !== movieId,
       );
     }
 
@@ -50,7 +61,7 @@ export const updateFavorite = async (req, res) => {
   } catch (error) {
     console.log(
       "Failed to update favorite movie in Clerk user metadata",
-      error.message
+      error.message,
     );
     res.json({ success: false, message: error.message });
   }
@@ -63,7 +74,11 @@ export const getFavorites = async (req, res) => {
     const user = await clerkClient.users.getUser(req.auth().userId);
     const favorites = user.privateMetadata.favorite;
 
-    const movies = await Movie.find({ _id: { $in: favorites } });
+    const movies = await prisma.movie.findMany({
+      where: {
+        id: { in: favorites },
+      },
+    });
 
     res.json({ success: true, movies });
   } catch (error) {

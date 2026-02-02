@@ -1,56 +1,55 @@
 import stripe from "stripe";
-import Booking from "../models/Booking.js";
+import { prisma } from "../prisma/client.js";
 import { inngest } from "../inngest/index.js";
 
-export const stripeWebhooks = async (request, response) => {
+export const stripeWebhooks = async (req, res) => {
   const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
-  console.log("stripe webhook triggered");
-  const sig = request.headers["stripe-signature"];
+  const sig = req.headers["stripe-signature"];
 
   let event;
 
+  // 1. CRITICAL: Verify the signature
+  // If this fails, it means the request didn't come from Stripe or was tampered with.
   try {
     event = stripeInstance.webhooks.constructEvent(
-      request.body,
+      req.body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );
-  } catch (error) {
-    return response.status(400).send(`Webhook Error: ${error.message}`);
+  } catch (err) {
+    console.error(`Webhook Signature Error: ${err.message}`);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
+  // 2. Process the Event
   try {
-    switch (event.type) {
-      case "payment_intent.succeeded": {
-        const paymentIntent = event.data.object;
-        const sessionList = await stripeInstance.checkout.sessions.list({
-          payment_intent: paymentIntent.id,
-        });
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
+      const { bookingId } = session.metadata;
 
-        const session = sessionList.data[0];
-        const { bookingId } = session.metadata;
+      console.log(`Payment received for Booking: ${bookingId}`);
 
-        await Booking.findByIdAndUpdate(bookingId, {
-          isPaid: true,
-          paymentLink: "",
-        });
+      // 3. Update PostgreSQL via Prisma
+      // We don't need to touch seats; they are already linked in the BookingSeat table.
+      await prisma.booking.update({
+        where: { id: bookingId },
+        data: { 
+          isPaid: true, 
+          paymentLink: null // Clear the link so they don't pay twice
+        },
+      });
 
-        // Sending email
-        await inngest.send({
-          name:"app/show.booked",
-          data:{bookingId}
-        })
-        break;
-      }
-
-      default:
-        console.log("Unhandled Event Type", event.type);
+      // 4. Trigger Inngest
+      // IMPORTANT: Your "app/show.booked" function must now use Prisma to fetch details!
+      await inngest.send({
+        name: "app/show.booked",
+        data: { bookingId },
+      });
     }
-    response.json({
-      received: true,
-    });
+
+    res.json({ received: true });
   } catch (error) {
-    console.log("Webhook processing error:", error);
-    response.status(500).send("Internal Server Error");
+    console.error("Webhook processing error:", error);
+    res.status(500).send("Internal Server Error");
   }
 };
