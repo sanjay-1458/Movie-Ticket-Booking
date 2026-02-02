@@ -1,15 +1,14 @@
 import type Show from "./show";
-import type User from "./user";
-
 export default interface Booking {
-  _id: string;
-  user: User;
+  id: string;
+  userId: string;
+  showId: string;
   show: Show;
   amount: number;
   bookedSeats: string[];
   isPaid: boolean;
 
-  paymentLink?: string;
+  paymentLink?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }

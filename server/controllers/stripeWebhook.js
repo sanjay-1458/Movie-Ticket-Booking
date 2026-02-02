@@ -26,7 +26,7 @@ export const stripeWebhooks = async (req, res) => {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
       const { bookingId } = session.metadata;
-
+      console.log("Found Booking ID in Metadata:", bookingId);
       console.log(`Payment received for Booking: ${bookingId}`);
 
       // 3. Update PostgreSQL via Prisma

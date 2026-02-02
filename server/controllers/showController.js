@@ -176,6 +176,7 @@ export const getShow = async (req, res) => {
       dateTime[date].push({
         time: show.showDateTime,
         showId: show._id,
+        showPrice: show.showPrice
       });
     });
 

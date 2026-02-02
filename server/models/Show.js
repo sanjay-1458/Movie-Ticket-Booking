@@ -16,11 +16,12 @@ const showSchema = new mongoose.Schema(
       required: true,
     },
     occupiedSeats: {
-      type: Object,
+      type: Map,
+      of: Boolean,
       default: {},
     },
   },
-  { minimize: false }
+  { minimize: false },
 );
 
 const Show = mongoose.model("Show", showSchema);

@@ -1,36 +1,31 @@
 import { clerkClient } from "@clerk/express";
-
+import Movie from "../models/Movie.js";
 import { prisma } from "../prisma/client.js";
-
+import Show from "../models/Show.js";
 // API function to get user bookings
 
 export const getUserBookings = async (req, res) => {
   try {
-    const userId = req.auth().userId;
+    const { userId } = req.auth();
 
-    const bookings = await prisma.booking.findMany({
+    // 1. Get bookings from SQL
+    const sqlBookings = await prisma.booking.findMany({
       where: { userId },
-      orderBy: { createdAt: "desc" },
-      include: {
-        show: {
-          include: {
-            movie: true,
-          },
-        },
-        seats: true,
-      },
+      orderBy: { createdAt: 'desc' }
     });
 
-    // 🔴 IMPORTANT: keep frontend unchanged
-    const formattedBookings = bookings.map((b) => ({
-      ...b,
-      bookedSeats: b.seats.map((s) => s.seatNo),
+    // 2. Hydrate with MongoDB data
+    const populatedBookings = await Promise.all(sqlBookings.map(async (booking) => {
+      const showDetails = await Show.findById(booking.showId).populate("movie");
+      return {
+        ...booking,
+        show: showDetails // This provides item.show.movie for your frontend
+      };
     }));
 
-    res.json({ success: true, bookings: formattedBookings });
+    res.json({ success: true, bookings: populatedBookings });
   } catch (error) {
-    console.error("Error in fetching users booking", error);
-    res.status(500).json({ success: false, message: error.message });
+    res.json({ success: false, message: error.message });
   }
 };
 
@@ -74,11 +69,7 @@ export const getFavorites = async (req, res) => {
     const user = await clerkClient.users.getUser(req.auth().userId);
     const favorites = user.privateMetadata.favorite;
 
-    const movies = await prisma.movie.findMany({
-      where: {
-        id: { in: favorites },
-      },
-    });
+    const movies = await Movie.find({ _id: { $in: favorites } });
 
     res.json({ success: true, movies });
   } catch (error) {

@@ -14,27 +14,31 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+// prisma/schema.prisma
 
 model Booking {
-  id           String   @id @default(uuid())
-  userId       String  
-  showId       String  
-  amount       Int      
-  isPaid       Boolean  @default(false)
-  paymentLink  String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  seats        BookingSeat[]
+  id          String   @id @default(uuid())
+  userId      String   // MongoDB User ID reference
+  showId      String   // MongoDB Show ID reference
+  amount      Int
+  bookedSeats String[]
+  isPaid      Boolean  @default(false)
+  paymentLink String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relation to seats
+  seats       BookingSeat[]
 }
 
 model BookingSeat {
-  id        String @id @default(uuid())
+  id        String  @id @default(uuid())
   bookingId String
   showId    String
   seatNo    String
 
   booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
+  // CRITICAL: This prevents duplicate seats for the same show
   @@unique([showId, seatNo]) 
 }
