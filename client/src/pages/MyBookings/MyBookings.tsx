@@ -27,13 +27,7 @@ function MyBookings() {
   const { axios, image_base_url, user, getToken } = useAppContext();
 
 
-  if(!user) {
-    return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-3xl font-bold text-center">Please Login to view Bookings</h1>
-    </div>
-  )
-  }
+  
   const [bookings, setBookings] = useState<Booking[]>([]);
 
   const [isloading, setIsLoading] = useState(true);
@@ -64,6 +58,14 @@ function MyBookings() {
       getMyBookings();
     }
   }, [user]);
+
+  if(!user) {
+    return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <h1 className="text-3xl font-bold text-center">Please Login to view Bookings</h1>
+    </div>
+  )
+  }
 
   return !isloading ? (
     <div
