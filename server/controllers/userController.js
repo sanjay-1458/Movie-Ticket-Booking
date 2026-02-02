@@ -14,7 +14,7 @@ export const getUserBookings = async (req, res) => {
       orderBy: { createdAt: "desc" },
     });
 
-    // 2. Hydrate with MongoDB data
+    // 2. Populating with MongoDB data
     const populatedBookings = await Promise.all(
       sqlBookings.map(async (booking) => {
         const showDetails = await Show.findById(booking.showId).populate(
@@ -33,7 +33,7 @@ export const getUserBookings = async (req, res) => {
   }
 };
 
-// Adding / Removing favorite movie in Clerk user metadata
+// Adding / Removing favorite movie from Clerk user metadata
 
 export const updateFavorite = async (req, res) => {
   try {

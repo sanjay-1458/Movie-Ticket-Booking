@@ -1,96 +1,127 @@
-import { vi } from "vitest";
-import { beforeEach, describe, it, expect } from "vitest";
-import { useClerk, useUser } from "@clerk/clerk-react";
-import { useNavigate } from "react-router";
-import NavBar from "./NavBar";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { vi, beforeEach, describe, it, expect } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import React from "react";
+import { useClerk, useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router";
+import { useAppContext } from "../../context/AppContext.tsx";
+import NavBar from "./NavBar";
 
-vi.mock("lucide-react", () => {
-  return {
-    MenuIcon: (props: { onClick: React.MouseEventHandler<HTMLElement> }) => (
-      <div {...props}>MENU</div>
-    ),
-    XIcon: (props: { onClick: React.MouseEventHandler<HTMLElement> }) => (
-      <div {...props}>XIcon</div>
-    ),
-    SearchIcon: () => <div />,
-    BookAIcon: () => <div />,
-  };
-});
+vi.mock("../../context/AppContext.tsx", () => ({
+  useAppContext: vi.fn(),
+}));
 
-vi.mock("react-router", () => {
-  return {
-    Link: ({ children }: { children: React.ReactNode }) => {
-      return <a>{children}</a>;
-    },
-    useNavigate: vi.fn(),
-  };
-});
+vi.mock("lucide-react", () => ({
+  MenuIcon: (props: any) => <div {...props}>MENU</div>,
+  XIcon: (props: any) => <div {...props}>XIcon</div>,
+  SearchIcon: (props: any) => <div {...props} />,
+  BookAIcon: (props: any) => <div {...props} />,
+}));
+
+vi.mock("react-router", () => ({
+  Link: ({ children, to, onClick }: any) => (
+    <a href={to} onClick={onClick}>
+      {children}
+    </a>
+  ),
+  useNavigate: vi.fn(),
+}));
 
 vi.mock("@clerk/clerk-react", () => {
-  const UserButton = ({ children }: { children: React.ReactNode }) => (
+  const UserButtonMock: any = ({ children }: { children: React.ReactNode }) => (
     <div data-testid="user-btn">{children}</div>
   );
-  UserButton.MenuItems = ({ children }: { children: React.ReactNode }) => (
+
+  UserButtonMock.MenuItems = ({ children }: { children: React.ReactNode }) => (
     <div data-testid="menu-items">{children}</div>
   );
-  UserButton.Action = ({
+
+  UserButtonMock.Action = ({
     label,
     onClick,
   }: {
     label: string;
-    onClick: React.MouseEventHandler<HTMLButtonElement>;
+    onClick: any;
   }) => (
     <button onClick={onClick} data-testid="menu-action">
       {label}
     </button>
   );
+
   return {
-    UserButton,
+    UserButton: UserButtonMock,
     useClerk: vi.fn(),
     useUser: vi.fn(),
   };
 });
 
 describe("Testing NavBar Component", () => {
+  const mockNavigate = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
+
+    vi.mocked(useAppContext).mockReturnValue({
+      favoriteMovies: [],
+      axios: { get: vi.fn(), post: vi.fn() },
+      fetchIsAdmin: vi.fn(),
+      getToken: vi.fn(),
+      navigate: mockNavigate,
+      currency: "$",
+    } as any);
+
+    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+
     vi.mocked(useClerk).mockReturnValue({
       openSignIn: vi.fn(),
-    } as unknown as ReturnType<typeof useClerk>);
+    } as any);
+
     vi.mocked(useUser).mockReturnValue({
       user: null,
       isLoaded: true,
       isSignedIn: false,
-    });
+    } as any);
   });
 
   it("should display login button when user is not logged in", () => {
     render(<NavBar />);
     expect(screen.getByText("Login")).toBeInTheDocument();
   });
-  it("should display UserButton when logged in and nagigation to my-bookings works", async () => {
-    const mockNaviagte = vi.fn();
-    vi.mocked(useNavigate).mockReturnValue(mockNaviagte);
 
+  it("should show Favorites link when favoriteMovies is not empty", () => {
+    vi.mocked(useAppContext).mockReturnValue({
+      favoriteMovies: [{ id: 1, title: "Inception" } as any],
+    } as any);
+
+    render(<NavBar />);
+    expect(screen.getByText("Favorites")).toBeInTheDocument();
+  });
+
+  it("should display UserButton when logged in and navigation to my-bookings works", async () => {
     vi.mocked(useUser).mockReturnValue({
-      user: { id: "user" },
-    } as unknown as ReturnType<typeof useUser>);
+      user: { id: "user_123", fullName: "user" },
+      isLoaded: true,
+      isSignedIn: true,
+    } as any);
 
     render(<NavBar />);
 
-    const userBtn = await screen.findByTestId("user-btn");
+    const userBtn = screen.getByTestId("user-btn");
     expect(userBtn).toBeInTheDocument();
 
-    fireEvent.click(userBtn);
+    const myBookingsAction = screen.getByTestId("menu-action");
+    expect(myBookingsAction).toHaveTextContent("My Bookings");
 
-    const myBookings = await screen.findByText("My Bookings");
+    fireEvent.click(myBookingsAction);
+    expect(mockNavigate).toHaveBeenCalledWith("/my-bookings");
+  });
 
-    expect(myBookings).toBeInTheDocument();
+  it("should open mobile menu when MenuIcon is clicked", () => {
+    render(<NavBar />);
 
-    fireEvent.click(screen.getByText("My Bookings"));
-    expect(mockNaviagte).toHaveBeenCalledWith("/my-bookings");
+    const menuBtn = screen.getByText("MENU");
+    fireEvent.click(menuBtn);
+
+    expect(screen.getByText("Home")).toBeInTheDocument();
   });
 });

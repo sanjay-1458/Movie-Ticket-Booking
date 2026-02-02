@@ -46,6 +46,15 @@ It uses:
 
 ---
 
+---
+
+#### After Migrating to PostgreSQL
+
+<img src="./assets/supabase-schema-kckctpynyihbsyquoxrt.png" width="540">
+
+---
+
+
 # Documenataion
 
 # Frontend Documentation
