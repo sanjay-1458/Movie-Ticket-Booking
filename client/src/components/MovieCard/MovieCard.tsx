@@ -5,17 +5,17 @@ import timeFormat from "../../lib/timeFormat.ts";
 import type Movie from "../../types/movie.ts";
 import { useAppContext } from "../../context/AppContext.tsx";
 
-
-
 function MovieCard({ movie }: { movie: Movie }) {
-  const {image_base_url} = useAppContext();
+  const { image_base_url } = useAppContext();
   const navigate = useNavigate();
   return (
-    <div className="flex flex-col justify-between p-3 bg-gray-800/60 rounded-2xl hover:-translate-y-1 transition duration-300 w-66
+    <div
+      className="flex flex-col justify-between p-3 bg-gray-800/60 rounded-2xl hover:-translate-y-1 transition duration-300 w-66
     
-    max-md:w-50 max-md:h-70">
+    max-md:w-50 max-md:h-70"
+    >
       <img
-        src={image_base_url+ movie.backdrop_path}
+        src={image_base_url + movie.backdrop_path}
         alt="Movie Poster"
         className="rounded-lg h-52 w-full object-cover object-bottom-right cursor-pointer"
         onClick={() => {

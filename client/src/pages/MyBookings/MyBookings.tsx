@@ -9,7 +9,6 @@ import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
-
 interface MyBookingsSuccess {
   success: true;
   bookings: Booking[];
@@ -26,8 +25,6 @@ function MyBookings() {
   const currency: string = import.meta.env.VITE_CURRENCY;
   const { axios, image_base_url, user, getToken } = useAppContext();
 
-
-  
   const [bookings, setBookings] = useState<Booking[]>([]);
 
   const [isloading, setIsLoading] = useState(true);
@@ -42,7 +39,7 @@ function MyBookings() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         if (data.success) {
           setBookings(data.bookings);
@@ -59,12 +56,14 @@ function MyBookings() {
     }
   }, [user]);
 
-  if(!user) {
+  if (!user) {
     return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-3xl font-bold text-center">Please Login to view Bookings</h1>
-    </div>
-  )
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-3xl font-bold text-center">
+          Please Login to view Bookings
+        </h1>
+      </div>
+    );
   }
 
   return !isloading ? (

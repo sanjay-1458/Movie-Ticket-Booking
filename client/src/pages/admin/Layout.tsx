@@ -1,4 +1,3 @@
-
 import AdminSideBar from "../../components/admin/AdminSideBar";
 import { Outlet } from "react-router-dom";
 import AdminNavBar from "../../components/admin/AdminNavBar";
@@ -7,12 +6,11 @@ import { useEffect } from "react";
 import Loading from "../../components/Loading/Loading";
 
 function Layout() {
+  const { isAdmin, fetchIsAdmin } = useAppContext();
 
-  const {isAdmin, fetchIsAdmin} = useAppContext();
-
-  useEffect(()=>{
+  useEffect(() => {
     fetchIsAdmin();
-  },[])
+  }, []);
   return isAdmin ? (
     <>
       <AdminNavBar />
@@ -23,8 +21,8 @@ function Layout() {
         </div>
       </div>
     </>
-  ):(
-    <Loading/>
+  ) : (
+    <Loading />
   );
 }
 

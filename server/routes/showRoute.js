@@ -7,8 +7,6 @@ import {
 } from "../controllers/showController.js";
 import { protectAdmin } from "../middleware/auth.js";
 
-// All routes which include the /show
-
 const showRouter = express.Router();
 
 showRouter.get("/now-playing", protectAdmin, getNowPlayingMovies);

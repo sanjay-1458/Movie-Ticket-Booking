@@ -6,9 +6,9 @@ const movieSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    id:{
-      type:Number,
-      required:true,
+    id: {
+      type: Number,
+      required: true,
     },
     title: {
       type: String,
@@ -52,12 +52,12 @@ const movieSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    vote_count:{
+    vote_count: {
       type: Number,
       required: true,
-    }
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Movie = mongoose.model("Movie", movieSchema);

@@ -36,6 +36,7 @@ const syncUserDeletion = inngest.createFunction(
     await User.findByIdAndDelete(id);
   },
 );
+
 // Inngest function to update a user data in database
 const syncUserUpdation = inngest.createFunction(
   { id: "update-user-from-clerk" },
@@ -68,7 +69,6 @@ const releaseSeatsAndDeleteBooking = inngest.createFunction(
       });
 
       if (booking && !booking.isPaid) {
-        // Deleting the booking automatically deletes the BookingSeat records
         await prisma.booking.delete({ where: { id: booking.id } });
       }
     });
@@ -91,7 +91,6 @@ const sendBookingConfirmationEmail = inngest.createFunction(
     });
 
     if (!booking) {
-      // Return early if booking is missing (already deleted or error)
       return { status: "Booking not found in SQL" };
     }
 

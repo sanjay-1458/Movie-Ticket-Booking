@@ -29,7 +29,7 @@ const bookingSchema = new mongoose.Schema(
       type: String,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Booking = mongoose.model("Booking", bookingSchema);

@@ -9,12 +9,12 @@ export const stripeWebhooks = async (req, res) => {
   let event;
 
   // 1. CRITICAL: Verify the signature
-  // If this fails, it means the request didn't come from Stripe or was tampered with.
+  // If this fails, it means the request didn't come from Stripe.
   try {
     event = stripeInstance.webhooks.constructEvent(
       req.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET
+      process.env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (err) {
     console.error(`Webhook Signature Error: ${err.message}`);
@@ -30,17 +30,15 @@ export const stripeWebhooks = async (req, res) => {
       console.log(`Payment received for Booking: ${bookingId}`);
 
       // 3. Update PostgreSQL via Prisma
-      // We don't need to touch seats; they are already linked in the BookingSeat table.
       await prisma.booking.update({
         where: { id: bookingId },
-        data: { 
-          isPaid: true, 
-          paymentLink: null // Clear the link so they don't pay twice
+        data: {
+          isPaid: true,
+          paymentLink: null,
         },
       });
 
       // 4. Trigger Inngest
-      // IMPORTANT: Your "app/show.booked" function must now use Prisma to fetch details!
       await inngest.send({
         name: "app/show.booked",
         data: { bookingId },

@@ -27,44 +27,53 @@ interface MovieDetailError {
 
 type MovieDetailsAPIResponse = MovieDetailError | MovieDetailSuccess;
 
-interface UpdateFavoriteAPIResponse{
-  success:boolean;
-  message:string;
+interface UpdateFavoriteAPIResponse {
+  success: boolean;
+  message: string;
 }
 
 function MovieDetails() {
-  const { shows, axios, getToken, user, fetchFavoriteMovies, image_base_url,favoriteMovies } =
-    useAppContext();
+  const {
+    shows,
+    axios,
+    getToken,
+    user,
+    fetchFavoriteMovies,
+    image_base_url,
+    favoriteMovies,
+  } = useAppContext();
 
   const { id } = useParams();
   const [show, setShow] = useState<Omit<MovieDetailSuccess, "success"> | null>(
-    null
+    null,
   );
   const navigate = useNavigate();
 
-  const handleFavorite = async()=>{
+  const handleFavorite = async () => {
     try {
-      if(!user){
+      if (!user) {
         return toast.error("Please login to proceed");
       }
       const token = await getToken();
-      const {data} = await axios.post<UpdateFavoriteAPIResponse>('/api/user/update-favorite',{movieId:id},{
-        headers:{
-          Authorization:`Bearer ${token}`
-        }
-      })
-      if(data.success) {
-        await fetchFavoriteMovies()
-        toast.success('Updated favorite')
+      const { data } = await axios.post<UpdateFavoriteAPIResponse>(
+        "/api/user/update-favorite",
+        { movieId: id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      if (data.success) {
+        await fetchFavoriteMovies();
+        toast.success("Updated favorite");
+      } else {
+        toast.error("Failed to upadte favorite");
       }
-      else{
-        toast.error('Failed to upadte favorite')
-      }
-
     } catch (error) {
-      console.log("Failed to update favorite",error);
+      console.log("Failed to update favorite", error);
     }
-  }
+  };
 
   useEffect(() => {
     const getShow = async () => {
@@ -76,7 +85,7 @@ function MovieDetails() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         if (data.success) {
           setShow({ movie: data.movie, dateTime: data.dateTime });
@@ -87,11 +96,8 @@ function MovieDetails() {
         console.log(error);
       }
     };
-      getShow();
-    
+    getShow();
   }, [id]);
-
-
 
   return show ? (
     <div className="px-6 md:px-16  lg:px-40 pt-30 md:pt-50">
@@ -138,9 +144,12 @@ function MovieDetails() {
               Buy Tickets
             </a>
             <button
-            onClick={handleFavorite}
-            className="bg-gray-700 p-2.5 rounded-full transition cursor-pointer active:scale-95">
-              <Heart className={`w-5 h-5 ${favoriteMovies.find(movie=>movie._id==id)?"fill-primary text-primary":""} `} />
+              onClick={handleFavorite}
+              className="bg-gray-700 p-2.5 rounded-full transition cursor-pointer active:scale-95"
+            >
+              <Heart
+                className={`w-5 h-5 ${favoriteMovies.find((movie) => movie._id == id) ? "fill-primary text-primary" : ""} `}
+              />
             </button>
           </div>
         </div>
@@ -162,7 +171,9 @@ function MovieDetails() {
                 />
               </div>
               <div className="">
-                <p className="text-gray-400 text-xs font-light">{cast.character}</p>
+                <p className="text-gray-400 text-xs font-light">
+                  {cast.character}
+                </p>
                 <p className="font-medium text-xs">{cast.name}</p>
               </div>
             </div>

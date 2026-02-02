@@ -80,7 +80,7 @@ function AddShows() {
         return toast("Click Add Show");
       }
       const showsInput = Object.entries(dateTimeSelection).map(
-        ([date, time]) => ({ date, time })
+        ([date, time]) => ({ date, time }),
       );
 
       const payload = {
@@ -97,7 +97,7 @@ function AddShows() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (data.success) {
         toast.success(data.message);
@@ -143,7 +143,7 @@ function AddShows() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         if (data.success) {
           setNowPlayingMovies(data.movies);
@@ -173,7 +173,7 @@ function AddShows() {
               <div
                 onClick={() => {
                   setSelectedMovie((prev) =>
-                    prev === movie.id ? null : movie.id
+                    prev === movie.id ? null : movie.id,
                   );
                 }}
                 key={movie.id}

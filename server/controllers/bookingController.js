@@ -1,7 +1,7 @@
 import { inngest } from "../inngest/index.js";
 import stripe from "stripe";
 import { prisma } from "../prisma/client.js";
-import Show from "../models/Show.js"; // <--- ADD THIS IMPORT
+import Show from "../models/Show.js";
 
 export const createBooking = async (req, res) => {
   try {
@@ -18,7 +18,7 @@ export const createBooking = async (req, res) => {
     const amount = showData.showPrice * selectedSeats.length;
 
     // 2. PRISMA ATOMIC TRANSACTION
-    // Note: Use 'bookedSeats' field to match your Prisma Schema
+
     const booking = await prisma.$transaction(async (tx) => {
       const newBooking = await tx.booking.create({
         data: {
@@ -30,7 +30,6 @@ export const createBooking = async (req, res) => {
         },
       });
 
-      // Create individual seat records for the Unique Constraint check
       await tx.bookingSeat.createMany({
         data: selectedSeats.map((seat) => ({
           bookingId: newBooking.id,
@@ -73,8 +72,6 @@ export const createBooking = async (req, res) => {
 
     return res.json({ success: true, url: stripeSession.url });
   } catch (error) {
-    // If you add a Unique Constraint to showId+bookedSeats later,
-    // catch P2002 here for instant availability error.
     console.error("Booking error:", error);
     if (error.code === "P2002") {
       return res.json({

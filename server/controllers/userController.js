@@ -11,17 +11,21 @@ export const getUserBookings = async (req, res) => {
     // 1. Get bookings from SQL
     const sqlBookings = await prisma.booking.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: "desc" },
     });
 
     // 2. Hydrate with MongoDB data
-    const populatedBookings = await Promise.all(sqlBookings.map(async (booking) => {
-      const showDetails = await Show.findById(booking.showId).populate("movie");
-      return {
-        ...booking,
-        show: showDetails // This provides item.show.movie for your frontend
-      };
-    }));
+    const populatedBookings = await Promise.all(
+      sqlBookings.map(async (booking) => {
+        const showDetails = await Show.findById(booking.showId).populate(
+          "movie",
+        );
+        return {
+          ...booking,
+          show: showDetails, 
+        };
+      }),
+    );
 
     res.json({ success: true, bookings: populatedBookings });
   } catch (error) {

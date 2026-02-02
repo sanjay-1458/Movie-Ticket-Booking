@@ -11,7 +11,7 @@ type Trailer = {
 
 function TrailersSection() {
   const [currentTrailer, setCurrentTrailer] = React.useState<Trailer>(
-    dummyTrailers[0]
+    dummyTrailers[0],
   );
 
   return (

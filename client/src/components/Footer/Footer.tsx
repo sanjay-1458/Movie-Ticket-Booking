@@ -12,16 +12,8 @@ function Footer() {
             repudiandae
           </p>
           <div className="flex gap-4">
-            <img
-              src={assets.googlePlay}
-              alt="Google Play"
-              className="w-20"
-            />
-            <img
-              src={assets.appStore}
-              alt="App Store"
-              className="w-20"
-            />
+            <img src={assets.googlePlay} alt="Google Play" className="w-20" />
+            <img src={assets.appStore} alt="App Store" className="w-20" />
           </div>
         </div>
         <div className="flex flex-1 flex-col gap-6">

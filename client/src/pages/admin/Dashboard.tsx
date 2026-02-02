@@ -75,7 +75,7 @@ function Dashboard() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         if (data.success) {

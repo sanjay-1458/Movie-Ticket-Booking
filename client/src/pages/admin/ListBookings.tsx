@@ -37,7 +37,7 @@ function ListBookings() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         if (data.success) {
           setBookings(data.bookings);
@@ -45,7 +45,7 @@ function ListBookings() {
           toast.error("Failed to fetch bookings");
         }
       } catch (error) {
-        console.log("Error in fetchng all booking data",error);
+        console.log("Error in fetchng all booking data", error);
       }
 
       setIsLoading(false);

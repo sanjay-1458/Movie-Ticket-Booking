@@ -24,7 +24,7 @@ export const getNowPlayingMovies = async (req, res) => {
         headers: {
           Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
         },
-      }
+      },
     );
 
     const movies = data.results;
@@ -32,7 +32,6 @@ export const getNowPlayingMovies = async (req, res) => {
     res.json({ success: true, movies: movies });
     cacheTime = Date.now();
     cachedMovies = data.results;
-    
   } catch (error) {
     console.log("Error in fetching now playing movies", error);
 
@@ -176,7 +175,7 @@ export const getShow = async (req, res) => {
       dateTime[date].push({
         time: show.showDateTime,
         showId: show._id,
-        showPrice: show.showPrice
+        showPrice: show.showPrice,
       });
     });
 
