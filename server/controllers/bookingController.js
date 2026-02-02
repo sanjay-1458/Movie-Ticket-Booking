@@ -4,6 +4,7 @@ import Booking from "../models/Booking.js";
 import Show from "../models/Show.js";
 import stripe from "stripe";
 
+
 // Function to check availability of seats (Updated to accept session)
 const checkSeatAvailability = async (showId, selectedSeats, session) => {
   const clash = await Show.findOne({
@@ -18,102 +19,79 @@ const checkSeatAvailability = async (showId, selectedSeats, session) => {
 
 // Creating booking data
 export const createBooking = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { userId } = req.auth();
     const { showId, selectedSeats } = req.body;
     const { origin } = req.headers;
 
-    // 1. ATOMIC SECTION: Check & Reserve Seats
-    const available = await checkSeatAvailability(showId, selectedSeats, session);
-    
-    if (!available) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.json({
-        success: false,
-        message: "Selected seats are not available",
-      });
+    // 1. Fetch Show details from MongoDB (to get the real price and title)
+    const showData = await Show.findById(showId).populate("movie");
+    if (!showData) {
+      return res.json({ success: false, message: "Show not found" });
     }
 
-    const showData = await Show.findById(showId).session(session).populate("movie");
+    const amount = showData.showPrice * selectedSeats.length;
 
-    // Create booking (Using array syntax for transaction support)
-    const [booking] = await Booking.create(
-      [
-        {
-          user: userId,
-          show: showId,
-          amount: showData.showPrice * selectedSeats.length,
-          bookedSeats: selectedSeats,
+    // 2. PRISMA ATOMIC TRANSACTION
+    // This creates the booking AND the seats. 
+    // If ANY seat is already taken, PostgreSQL will fail, and NO booking will be created.
+    const booking = await prisma.booking.create({
+      data: {
+        userId: userId,
+        showId: showId,
+        amount: amount,
+        seats: {
+          create: selectedSeats.map((seat) => ({
+            showId: showId,
+            seatNo: seat,
+          })),
         },
-      ],
-      { session }
-    );
-
-    // Update seats atomically
-    for (const seat of selectedSeats) {
-      showData.occupiedSeats[seat] = userId;
-    }
-
-    showData.markModified("occupiedSeats");
-    await showData.save({ session });
-
-    // Commit the DB changes immediately to release locks
-    await session.commitTransaction();
-    session.endSession();
-
-    // 2. EXTERNAL PROCESS: Stripe Payment (Outside transaction to avoid timeouts)
-    const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
-
-    const line_items = [
-      {
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: showData.movie.title,
-          },
-          unit_amount: Math.floor(booking.amount) * 100,
-        },
-        quantity: 1,
       },
-    ];
-
-    const stripeSession = await stripeInstance.checkout.sessions.create({
-      success_url: `${origin}/loading/my-bookings`,
-      cancel_url: `${origin}/my-bookings`,
-      line_items: line_items,
-      mode: "payment",
-      metadata: {
-        bookingId: booking._id.toString(),
-      },
-      expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 minute session
     });
 
-    // Save the payment link to the booking (Standard save, no transaction needed now)
-    booking.paymentLink = stripeSession.url;
-    await booking.save();
+    // 3. STRIPE PAYMENT SETUP
+    const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
+    const stripeSession = await stripeInstance.checkout.sessions.create({
+      mode: "payment",
+      success_url: `${origin}/loading/my-bookings`,
+      cancel_url: `${origin}/my-bookings`,
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: { name: showData.movie.title },
+            unit_amount: amount * 100, // Stripe expects cents
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: { bookingId: booking.id }, // Use SQL 'id' (UUID)
+    });
 
-    // Triggering Inngest scheduler
+    // 4. UPDATE BOOKING WITH PAYMENT LINK
+    await prisma.booking.update({
+      where: { id: booking.id },
+      data: { paymentLink: stripeSession.url },
+    });
+
+    // 5. TRIGGER INNGEST (Pass the SQL UUID)
     await inngest.send({
       name: "app/checkpayment",
-      data: {
-        bookingId: booking._id.toString(),
-      },
+      data: { bookingId: booking.id },
     });
 
     return res.json({ success: true, url: stripeSession.url });
 
   } catch (error) {
-    // Abort transaction on any error
-    if (session.inTransaction()) {
-        await session.abortTransaction();
+    // 6. CATCH DOUBLE-BOOKING ERROR (Prisma P2002 Unique Constraint)
+    if (error.code === 'P2002') {
+      return res.json({ 
+        success: false, 
+        message: "One or more seats are already taken. Please refresh and try again." 
+      });
     }
-    session.endSession();
-    
-    console.log("Booking error:", error);
+
+    console.error("Booking error:", error);
     return res.json({ success: false, message: error.message });
   }
 };
@@ -122,13 +100,20 @@ export const getOccupiedSeats = async (req, res) => {
   try {
     const { showId } = req.params;
 
-    const showData = await Show.findById(showId);
+    const seats = await prisma.bookingSeat.findMany({
+      where: { showId },
+      select: { seatNo: true },
+    });
 
-    const occupiedSeats = Object.keys(showData.occupiedSeats);
-
-    res.json({ success: true, occupiedSeats });
+    res.json({
+      success: true,
+      occupiedSeats: seats.map((s) => s.seatNo),
+    });
   } catch (error) {
-    console.log("Error in fetching occupied seats", error.message);
-    res.json({ success: false, message: error.message });
+    console.error("Error fetching occupied seats:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Could not retrieve seat data" 
+    });
   }
 };
