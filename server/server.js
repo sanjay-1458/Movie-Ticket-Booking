@@ -14,41 +14,47 @@ import { stripeWebhooks } from "./controllers/stripeWebhook.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Connection to database
-
 await connectDB();
 
-// Stripe Route
+const allowedOrigins = [
+  "https://quickshow-sigma-lyart.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    credentials: true,
+  }),
+);
 
 app.use(
   "/api/stripe",
   express.raw({ type: "application/json" }),
-  stripeWebhooks
+  stripeWebhooks,
 );
 
-
-
-
-// Middleware
-
 app.use(express.json());
-app.use(cors());
 app.use(clerkMiddleware());
-
-// API routes
 
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
 
 app.use("/api/inngest", serve({ client: inngest, functions }));
-
 app.use("/api/show", showRouter);
-
 app.use("/api/booking", bookingRouter);
-
 app.use("/api/admin", adminRouter);
-
 app.use("/api/user", userRouter);
 
 app.listen(PORT, () => {

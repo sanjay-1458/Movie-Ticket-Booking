@@ -1,0 +1,61 @@
+[33mba65d5b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Testing Stripe
+[33m3f37419[m Testing Stripe
+[33m78fa845[m Testing Stripe
+[33m65f22de[m Testing Stripe
+[33mb743306[m Enable CORS
+[33m8ab9503[m Enable CORS
+[33m9f1a622[m Merge pull request #13 from sanjay-1458/feature/migratingDatabase
+[33mfcbf6e6[m[33m ([m[1;31morigin/feature/migratingDatabase[m[33m)[m Migrating DataBase
+[33me914db8[m ACID Integration
+[33m2fb4f2b[m Deleted Docker
+[33meac9271[m Creating DOcker Image
+[33m6cb5561[m Merge pull request #12 from sanjay-1458/feature/ec2
+[33mda4473c[m[33m ([m[1;31morigin/feature/ec2[m[33m)[m Added Dockerfile
+[33m2cd96a0[m Changed Color
+[33m9ce6e81[m Fixing Pay Now Button
+[33m028e59d[m Fixing Image Path
+[33m41d0029[m Testing Image
+[33m5038629[m Fixing Image Path
+[33mfe7ffb0[m Fixing Image Path
+[33m0b2f7f3[m Fixed DateTime Type
+[33md689e24[m Project Completed
+[33m119ab07[m Added Notification
+[33m9ee78d8[m Fixing id for Inngest
+[33mfaea428[m Fixing Inngest Scheduler
+[33m28d4d28[m Resync Inngest
+[33m3edfe89[m Fixing Seat Deallocation Event
+[33m4f914d2[m Remove UnPaid Seats After 10 minutes
+[33m833a9e3[m Redeploying to Check Stripe Webhook
+[33ma178e30[m Stripe Error Fix
+[33m2f6c3fa[m Fxing Raw Buffer for Stripe
+[33m8e044c0[m Checking Stripe Error
+[33m2b6b12f[m Fixing Deployment
+[33mf3c3264[m Merge pull request #11 from sanjay-1458/feature/stripe-integration
+[33me765879[m[33m ([m[1;31morigin/feature/stripe-integration[m[33m)[m Stripe Integration for Payements
+[33m5846c4f[m Fixing routes
+[33m1c7ac82[m Merge pull request #10 from sanjay-1458/feature/integrate-client-server
+[33m8de7488[m[33m ([m[1;31morigin/feature/integrate-client-server[m[33m)[m Integrating client to server
+[33m9589125[m Merge pull request #9 from sanjay-1458/feature/admin-endpoints
+[33m782d7e7[m[33m ([m[1;31morigin/feature/admin-endpoints[m[33m)[m Added Endpoints for Admin
+[33m77a2e22[m Merge pull request #8 from sanjay-1458/feature/backend-endpoints
+[33m6bc5a0c[m[33m ([m[1;31morigin/feature/backend-endpoints[m[33m)[m Added Endpoint for Users
+[33me8f70a0[m Added Data for Home Page
+[33mdf178e1[m Fetched the movies from TMDB API and send a response
+[33m187de4f[m Changed Import File Extension
+[33me4306a6[m Vercel Deployment for Inngest
+[33ma632c2d[m Server Initialization
+[33mcabf02c[m Updated README.md
+[33m530be5e[m Updated README.md
+[33m92f8aca[m Merge pull request #7 from sanjay-1458/feature/admin-pages
+[33mb999d1f[m[33m ([m[1;31morigin/feature/admin-pages[m[33m)[m Completed FrontEnd
+[33mb659f42[m Added Admin Pages
+[33m2feb31b[m Merge pull request #6 from sanjay-1458/feature/seat-layout-page
+[33m1ae5d4d[m[33m ([m[1;31morigin/feature/seat-layout-page[m[33m)[m User Section Completed
+[33me190643[m Merge pull request #5 from sanjay-1458/feature/movie-details
+[33ma8f2ffa[m[33m ([m[1;31morigin/feature/movie-details[m[33m)[m Movie Deatils Page Created
+[33macf0f30[m Merge pull request #4 from sanjay-1458/feature/movies-page
+[33m6db3e29[m[33m ([m[1;31morigin/feature/movies-page[m[33m)[m Movie Page Created
+[33m2b3d1d7[m Merge pull request #3 from sanjay-1458/feature/home-page
+[33m11e75fe[m[33m ([m[1;31morigin/feature/home-page[m[33m)[m Created Home Page
+[33mf63fae6[m Merge pull request #2 from sanjay-1458/feature/navbar-test
+[33m600369a[m[33m ([m[1;31morigin/feature/navbar-test[m[33m)[m Added Test for NavBar Component
