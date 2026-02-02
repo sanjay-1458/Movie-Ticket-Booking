@@ -89,7 +89,7 @@ export const getOccupiedSeats = async (req, res) => {
   try {
     const { showId } = req.params;
 
-    // Fetch all seats tied to this show from SQL
+    // Fetch all seats occupied to this show from SQL
     const seats = await prisma.bookingSeat.findMany({
       where: { showId },
       select: { seatNo: true },
