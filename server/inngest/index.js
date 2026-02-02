@@ -58,18 +58,35 @@ const syncUserUpdation = inngest.createFunction(
 // Inngest function to cancel booking and release seats of shows after 10 minutes, when payment is not done
 
 const releaseSeatsAndDeleteBooking = inngest.createFunction(
-  { id: "release-seats-sql" },
+  { id: "release-seats-release-bookings" }, 
   { event: "app/checkpayment" },
   async ({ event, step }) => {
+
+    // 1. Wait for 10 minutes 
     await step.sleep("wait-for-2-minutes", "2m");
 
-    await step.run("cleanup-sql-booking", async () => {
+    await step.run("check-payment-status", async () => {
+      // Fetch the booking from SQL
       const booking = await prisma.booking.findUnique({
         where: { id: event.data.bookingId },
       });
 
       if (booking && !booking.isPaid) {
-        await prisma.booking.delete({ where: { id: booking.id } });
+        
+        // A. Clear seats in MongoDB so other people can book them
+        const show = await Show.findById(booking.showId);
+        if (show && show.occupiedSeats) {
+          booking.bookedSeats.forEach((seat) => {
+            delete show.occupiedSeats[seat];
+          });
+          show.markModified("occupiedSeats");
+          await show.save();
+        }
+
+        // B. Delete the booking from SQL (Prisma)
+        await prisma.booking.delete({ 
+          where: { id: booking.id } 
+        });
       }
     });
   },
@@ -91,7 +108,7 @@ const sendBookingConfirmationEmail = inngest.createFunction(
     });
 
     if (!booking) {
-      return { status: "Booking not found in SQL" };
+      return { status: "Booking not found" };
     }
 
     const { user, show } = await step.run("fetch-mongo-details", async () => {

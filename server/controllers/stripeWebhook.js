@@ -41,7 +41,7 @@ export const stripeWebhooks = async (req, res) => {
       // 4. Trigger Inngest
       await inngest.send({
         name: "app/show.booked",
-        data: { bookingId },
+        data: { bookingId: updatedBooking.id },
       });
     }
 
