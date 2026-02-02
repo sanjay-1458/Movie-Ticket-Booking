@@ -3,7 +3,9 @@
 This is a `Movie-Ticket-Booking` application, where user can book tickets for specific movie, with their desired seats.
 The admin can set shows, view the booked seats also motior the earning of each movie.
 
-This project is written with `React`. `TypeScript`, `Node`, `Express`, `MongoDB`. Along with the unit test using `Vitest` & `React-Testing-Library`.
+This project is written with `React`. `TypeScript`, `Node`, `Express`, `MongoDB`, `PostgreSQL`, `Prisma`. Along with the unit test using `Vitest` & `React-Testing-Library`.
+
+This application is build using hybrid database approach. Transaction related to `booking data` and `stripe payment` is handled using relational database due to strong ACID property, and remaining field such as `movies`, `shows` is handled using `mongodb` it can also provide document wise locking but due to scalibility and eventual consistency document database is used.
 
 This application provides feature like adding movies to favorites, booking seats without dealing with double bookings, reserving the booking seats for `10 minutes` if user fail to make payment.
 
