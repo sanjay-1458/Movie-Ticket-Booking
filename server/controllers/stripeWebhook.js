@@ -1,56 +1,81 @@
 import stripe from "stripe";
-import Booking from "../models/Booking.js";
+import { prisma } from "../prisma/client.js";
 import { inngest } from "../inngest/index.js";
 
 export const stripeWebhooks = async (request, response) => {
-  const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
-  console.log("stripe webhook triggered");
-  const sig = request.headers["stripe-signature"];
+  console.log("STRIPE WEBHOOK HIT");
 
+  console.log("Headers keys:", Object.keys(request.headers));
+  console.log(
+    "Body type:",
+    typeof request.body,
+    "isBuffer:",
+    Buffer.isBuffer(request.body),
+    "length:",
+    request.body?.length,
+  );
+
+  const sig = request.headers["stripe-signature"];
+  console.log("Stripe signature present:", !!sig);
+
+  if (!request.body || !request.body.length) {
+    console.error("BODY IS EMPTY — Stripe cannot verify");
+    return response.status(400).send("Empty body");
+  }
+
+  const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
   let event;
 
   try {
     event = stripeInstance.webhooks.constructEvent(
       request.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET
+      process.env.STRIPE_WEBHOOK_SECRET,
     );
+    console.log("Event verified:", event.type);
   } catch (error) {
+    console.error("Signature verification failed:", error.message);
     return response.status(400).send(`Webhook Error: ${error.message}`);
   }
 
   try {
-    switch (event.type) {
-      case "payment_intent.succeeded": {
-        const paymentIntent = event.data.object;
-        const sessionList = await stripeInstance.checkout.sessions.list({
-          payment_intent: paymentIntent.id,
-        });
+    console.log("Event data object keys:", Object.keys(event.data.object));
 
-        const session = sessionList.data[0];
-        const { bookingId } = session.metadata;
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
 
-        await Booking.findByIdAndUpdate(bookingId, {
-          isPaid: true,
-          paymentLink: "",
-        });
+      console.log("Session metadata:", session.metadata);
 
-        // Sending email
-        await inngest.send({
-          name:"app/show.booked",
-          data:{bookingId}
-        })
-        break;
+      const bookingId = session.metadata?.bookingId;
+
+      if (!bookingId) {
+        console.error("bookingId missing in metadata");
+        return response.status(400).send("Missing bookingId");
       }
 
-      default:
-        console.log("Unhandled Event Type", event.type);
+      console.log("Booking ID:", bookingId);
+
+      await prisma.booking.update({
+        where: { id: bookingId },
+        data: {
+          isPaid: true,
+          paymentLink: null,
+        },
+      });
+
+      console.log("Booking marked as PAID in DB");
+
+      await inngest.send({
+        name: "app/show.booked",
+        data: { bookingId },
+      });
+
+      console.log("📨 Inngest event sent");
     }
-    response.json({
-      received: true,
-    });
+
+    response.json({ received: true });
   } catch (error) {
-    console.log("Webhook processing error:", error);
+    console.error("Webhook processing error:", error);
     response.status(500).send("Internal Server Error");
   }
 };

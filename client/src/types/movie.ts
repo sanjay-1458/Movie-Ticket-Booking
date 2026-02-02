@@ -1,12 +1,12 @@
 export default interface Movie {
   _id: string;
-  id:number;
+  id: number;
   title: string;
   overview: string;
   poster_path: string;
   backdrop_path: string;
   release_date: string;
-  vote_count:number;
+  vote_count: number;
 
   original_language?: string;
   tagline?: string;

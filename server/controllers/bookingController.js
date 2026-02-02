@@ -1,134 +1,112 @@
-import mongoose from "mongoose"; 
-import { inngest } from "../inngest/index.js";
-import Booking from "../models/Booking.js";
-import Show from "../models/Show.js";
+import { prisma } from "../prisma/client.js";
 import stripe from "stripe";
+import { inngest } from "../inngest/index.js";
 
-// Function to check availability of seats (Updated to accept session)
-const checkSeatAvailability = async (showId, selectedSeats, session) => {
-  const clash = await Show.findOne({
-    _id: showId,
-    $or: selectedSeats.map((seat) => ({
-      [`occupiedSeats.${seat}`]: { $exists: true },
-    })),
-  }).session(session); // Bind to session
-
-  return !clash;
-};
-
-// Creating booking data
+/**
+ * CREATE BOOKING
+ * - Uses PostgreSQL (Prisma) for booking + seat locking
+ * - Uses Stripe for payment
+ * - Uses Inngest for async follow-up
+ */
 export const createBooking = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { userId } = req.auth();
-    const { showId, selectedSeats } = req.body;
-    const { origin } = req.headers;
 
-    // 1. ATOMIC SECTION: Check & Reserve Seats
-    const available = await checkSeatAvailability(showId, selectedSeats, session);
-    
-    if (!available) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.json({
+    // 🔴 THIS IS CRITICAL
+    const { showId, selectedSeats, showPrice, movieTitle } = req.body;
+
+    // 🔴 HARD GUARD (prevents silent undefined)
+    if (!showId || !selectedSeats || !showPrice) {
+      return res.status(400).json({
         success: false,
-        message: "Selected seats are not available",
+        message: "showId, selectedSeats, showPrice are required",
       });
     }
 
-    const showData = await Show.findById(showId).session(session).populate("movie");
+    // ✅ amount MUST be computed HERE
+    const amount = Number(showPrice) * selectedSeats.length;
 
-    // Create booking (Using array syntax for transaction support)
-    const [booking] = await Booking.create(
-      [
-        {
-          user: userId,
-          show: showId,
-          amount: showData.showPrice * selectedSeats.length,
-          bookedSeats: selectedSeats,
-        },
-      ],
-      { session }
-    );
-
-    // Update seats atomically
-    for (const seat of selectedSeats) {
-      showData.occupiedSeats[seat] = userId;
+    if (!amount || isNaN(amount)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid amount calculation",
+      });
     }
 
-    showData.markModified("occupiedSeats");
-    await showData.save({ session });
-
-    // Commit the DB changes immediately to release locks
-    await session.commitTransaction();
-    session.endSession();
-
-    // 2. EXTERNAL PROCESS: Stripe Payment (Outside transaction to avoid timeouts)
-    const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
-
-    const line_items = [
-      {
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: showData.movie.title,
-          },
-          unit_amount: Math.floor(booking.amount) * 100,
+    // ✅ THIS is what Prisma actually receives
+    const booking = await prisma.booking.create({
+      data: {
+        userId,
+        showId,
+        amount, // ✅ THIS WAS MISSING AT RUNTIME
+        seats: {
+          create: selectedSeats.map((seat) => ({
+            showId,
+            seatNo: seat,
+          })),
         },
-        quantity: 1,
       },
-    ];
-
-    const stripeSession = await stripeInstance.checkout.sessions.create({
-      success_url: `${origin}/loading/my-bookings`,
-      cancel_url: `${origin}/my-bookings`,
-      line_items: line_items,
-      mode: "payment",
-      metadata: {
-        bookingId: booking._id.toString(),
-      },
-      expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 minute session
     });
 
-    // Save the payment link to the booking (Standard save, no transaction needed now)
-    booking.paymentLink = stripeSession.url;
-    await booking.save();
+    const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
 
-    // Triggering Inngest scheduler
+    const stripeSession = await stripeInstance.checkout.sessions.create({
+      success_url: `${req.headers.origin}/loading/my-bookings`,
+      cancel_url: `${req.headers.origin}/my-bookings`,
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: movieTitle,
+            },
+            unit_amount: amount * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        bookingId: booking.id,
+      },
+    });
+
+    await prisma.booking.update({
+      where: { id: booking.id },
+      data: { paymentLink: stripeSession.url },
+    });
+
     await inngest.send({
       name: "app/checkpayment",
-      data: {
-        bookingId: booking._id.toString(),
-      },
+      data: { bookingId: booking.id },
     });
 
     return res.json({ success: true, url: stripeSession.url });
-
   } catch (error) {
-    // Abort transaction on any error
-    if (session.inTransaction()) {
-        await session.abortTransaction();
-    }
-    session.endSession();
-    
-    console.log("Booking error:", error);
+    console.error("Booking error:", error);
     return res.json({ success: false, message: error.message });
   }
 };
 
+/**
+ * GET OCCUPIED SEATS
+ * - Reads from PostgreSQL (bookingSeat table)
+ */
 export const getOccupiedSeats = async (req, res) => {
   try {
     const { showId } = req.params;
 
-    const showData = await Show.findById(showId);
+    const seats = await prisma.bookingSeat.findMany({
+      where: { showId },
+      select: { seatNo: true },
+    });
 
-    const occupiedSeats = Object.keys(showData.occupiedSeats);
-
-    res.json({ success: true, occupiedSeats });
+    return res.json({
+      success: true,
+      occupiedSeats: seats.map((s) => s.seatNo),
+    });
   } catch (error) {
-    console.log("Error in fetching occupied seats", error.message);
-    res.json({ success: false, message: error.message });
+    console.error("Error in fetching occupied seats:", error);
+    return res.json({ success: false, message: error.message });
   }
 };

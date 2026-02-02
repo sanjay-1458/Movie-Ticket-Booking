@@ -11,7 +11,7 @@ import { useAppContext } from "../../context/AppContext";
 import type Movie from "../../types/movie";
 
 interface DateTime {
-  [date: string]: { time: string; showId: string }[];
+  [date: string]: { time: string; showId: string; showPrice: number }[];
 }
 interface SeatLayoutSuccess {
   success: true;
@@ -49,10 +49,11 @@ function SeatLayout() {
   const [selectedTime, setSelectedTime] = useState<{
     time: string;
     showId: string;
+    showPrice: number;
   } | null>(null);
 
   const [show, setShow] = useState<Omit<SeatLayoutSuccess, "success"> | null>(
-    null
+    null,
   );
 
   const groupRows: string[][] = [
@@ -78,7 +79,7 @@ function SeatLayout() {
     setSelectedSeats((prev) =>
       prev.includes(seatId)
         ? prev.filter((seat) => seat !== seatId)
-        : [...prev, seatId]
+        : [...prev, seatId],
     );
   };
 
@@ -116,7 +117,7 @@ function SeatLayout() {
       if (!user) {
         return toast.error("Please login to book a show");
       }
-      if (!selectedTime || !selectedSeats.length) {
+      if (!selectedTime || !selectedSeats.length || !show) {
         return toast.error("Please select seat and time to proceed");
       }
       const token = await getToken();
@@ -125,12 +126,14 @@ function SeatLayout() {
         {
           showId: selectedTime.showId,
           selectedSeats,
+          showPrice: selectedTime.showPrice, 
+          movieTitle: show.movie.title, 
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (data.success) {
         window.location.href = data.url;
@@ -149,7 +152,7 @@ function SeatLayout() {
           return toast.error("Please select a time");
         }
         const { data } = await axios.get<GetOccupiedSeatsAPIResponse>(
-          `/api/booking/seats/${selectedTime.showId}`
+          `/api/booking/seats/${selectedTime.showId}`,
         );
 
         if (data.success) {
@@ -170,7 +173,7 @@ function SeatLayout() {
     const getShow = async () => {
       try {
         const { data } = await axios.get<SeatLayoutAPIResponse>(
-          `/api/show/${id}`
+          `/api/show/${id}`,
         );
         if (data.success) {
           setShow({ movie: data.movie, dateTime: data.dateTime });
@@ -206,6 +209,7 @@ function SeatLayout() {
                   setSelectedTime({
                     showId: item.showId,
                     time: item.time,
+                    showPrice: item.showPrice,
                   });
                 }}
                 className={`flex items-center gap-2 px-6 py-2 w-max

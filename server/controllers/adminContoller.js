@@ -1,4 +1,3 @@
-import Booking from "../models/Booking.js";
 import Show from "../models/Show.js";
 import User from "../models/User.js";
 
@@ -38,13 +37,44 @@ export const getDashboardData = async (req, res) => {
 
 export const getAllShows = async (req, res) => {
   try {
-    const shows = await Show.find({ showDateTime: { $gte: new Date() } })
+    const shows = await Show.find()
       .populate("movie")
       .sort({ showDateTime: 1 });
 
-    res.json({ success: true, shows });
+    const showIds = shows.map((s) => s._id.toString());
+
+    // Aggregate from Postgres
+    const bookings = await prisma.booking.groupBy({
+      by: ["showId"],
+      where: { showId: { in: showIds } },
+      _count: { _all: true },
+      _sum: { amount: true },
+    });
+
+    const bookingMap = {};
+    bookings.forEach((b) => {
+      bookingMap[b.showId] = {
+        totalBookings: b._count._all,
+        totalRevenue: b._sum.amount || 0,
+      };
+    });
+
+    const response = shows.map((show) => {
+      const stats = bookingMap[show._id.toString()] || {
+        totalBookings: 0,
+        totalRevenue: 0,
+      };
+
+      return {
+        ...show.toObject(),
+        totalBookings: stats.totalBookings,
+        totalRevenue: stats.totalRevenue,
+      };
+    });
+
+    res.json({ success: true, shows: response });
   } catch (error) {
-    console.log("Error in fetching list shows for admin", error);
+    console.error("Admin show list error:", error);
     res.json({ success: false, message: error.message });
   }
 };

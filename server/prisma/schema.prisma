@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+datasource db {
+  provider = "postgresql"
+}
+model Booking {
+  id          String   @id @default(uuid())
+  userId      String
+  showId      String
+  amount      Int
+  isPaid      Boolean  @default(false)
+  paymentLink String?
+  createdAt   DateTime @default(now())
+
+  seats       BookingSeat[]
+}
+
+model BookingSeat {
+  id        String @id @default(uuid())
+  bookingId String
+  showId    String
+  seatNo    String
+
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  @@unique([showId, seatNo])
+}

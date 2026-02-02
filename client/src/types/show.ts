@@ -6,5 +6,6 @@ export default interface Show {
   movie: Movie;      
   showDateTime: string; 
   showPrice: number;
-  occupiedSeats: Record<string, string>; 
+  totalBookings: number;
+  totalRevenue: number;
 }

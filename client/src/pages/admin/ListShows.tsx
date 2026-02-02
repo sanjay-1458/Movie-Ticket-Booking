@@ -85,10 +85,10 @@ function ListShows() {
                   <td className="p-2 min-w-45 pl-5">{show.movie.title}</td>
                   <td className="p-2">{dateFormat(show.showDateTime)}</td>
                   <td className="p-2">
-                    {Object.keys(show.occupiedSeats).length}
+                    {show.totalBookings}
                   </td>
                   <td className="p-2">
-                    {show.showPrice * Object.keys(show.occupiedSeats).length}
+                    {currency + show.totalRevenue}
                   </td>
                 </tr>
               );

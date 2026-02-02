@@ -174,9 +174,10 @@ export const getShow = async (req, res) => {
       }
 
       dateTime[date].push({
-        time: show.showDateTime,
-        showId: show._id,
-      });
+  time: show.showDateTime,
+  showId: show._id,
+  showPrice: show.showPrice,   // ✅ ADD THIS
+});
     });
 
     res.json({ success: true, movie, dateTime });

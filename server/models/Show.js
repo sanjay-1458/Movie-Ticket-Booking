@@ -15,10 +15,6 @@ const showSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    occupiedSeats: {
-      type: Object,
-      default: {},
-    },
   },
   { minimize: false }
 );
