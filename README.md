@@ -102,6 +102,130 @@ If your port is already in use it will run at port `5174` but if you want to fre
 
 ---
 
+### Client.env
+<table>
+  <thead>
+    <tr>
+      <th>Variable</th>
+      <th>What it is</th>
+      <th>How to get it</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>VITE_CURRENCY</td>
+      <td>Default currency symbol used in UI</td>
+      <td>Define manually (e.g., ₹, $, €)</td>
+    </tr>
+    <tr>
+      <td>VITE_CLERK_PUBLISHABLE_KEY</td>
+      <td>Public authentication key (frontend safe)</td>
+      <td>Create account on Clerk → Create app → Copy Publishable Key</td>
+    </tr>
+    <tr>
+      <td>VITE_BASE_URL</td>
+      <td>Base URL of backend server</td>
+      <td>Use http://localhost:&lt;PORT&gt; or deployed backend URL</td>
+    </tr>
+    <tr>
+      <td>VITE_TMDB_IMAGE_BASE_URL</td>
+      <td>Base URL for movie images</td>
+      <td>Use TMDB official image base URL</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+### Server.env
+<table>
+  <thead>
+    <tr>
+      <th>Variable</th>
+      <th>What it is</th>
+      <th>How to get it</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PORT</td>
+      <td>Port where backend server runs</td>
+      <td>Choose any free port (e.g., 5000)</td>
+    </tr>
+    <tr>
+      <td>MONGODB_URI</td>
+      <td>MongoDB database connection string</td>
+      <td>MongoDB Atlas → Create cluster → Connect → Copy URI</td>
+    </tr>
+    <tr>
+      <td>CLERK_PUBLISHABLE_KEY</td>
+      <td>Public key for authentication</td>
+      <td>Clerk dashboard</td>
+    </tr>
+    <tr>
+      <td>CLERK_SECRET_KEY</td>
+      <td>Private backend authentication key</td>
+      <td>Clerk dashboard → Backend keys</td>
+    </tr>
+    <tr>
+      <td>INNGEST_EVENT_KEY</td>
+      <td>API key for event workflows</td>
+      <td>Inngest dashboard → Project settings</td>
+    </tr>
+    <tr>
+      <td>INNGEST_SIGNING_KEY</td>
+      <td>Webhook verification key</td>
+      <td>Inngest dashboard</td>
+    </tr>
+    <tr>
+      <td>TMDB_API_KEY</td>
+      <td>API key for movie data</td>
+      <td>TMDB account → API section</td>
+    </tr>
+    <tr>
+      <td>STRIPE_PUBLISHABLE_KEY</td>
+      <td>Public key for payments</td>
+      <td>Stripe dashboard → API keys</td>
+    </tr>
+    <tr>
+      <td>STRIPE_SECRET_KEY</td>
+      <td>Private key for payments</td>
+      <td>Stripe dashboard → Secret key</td>
+    </tr>
+    <tr>
+      <td>STRIPE_WEBHOOK_SECRET</td>
+      <td>Webhook verification secret</td>
+      <td>Stripe → Webhooks → Create endpoint</td>
+    </tr>
+    <tr>
+      <td>SENDER_EMAIL</td>
+      <td>Email used to send system emails</td>
+      <td>Your email (e.g., Gmail)</td>
+    </tr>
+    <tr>
+      <td>SMTP_USER</td>
+      <td>SMTP username</td>
+      <td>Email provider (usually same as sender email)</td>
+    </tr>
+    <tr>
+      <td>SMTP_PASS</td>
+      <td>SMTP app password</td>
+      <td>Generate from email provider (e.g., Gmail App Passwords)</td>
+    </tr>
+    <tr>
+      <td>DATABASE_URL</td>
+      <td>Primary database connection string (PostgreSQL)</td>
+      <td>Supabase → Project → Database → Connection string</td>
+    </tr>
+    <tr>
+      <td>DIRECT_URL</td>
+      <td>Direct database connection (for migrations/tools)</td>
+      <td>Supabase dashboard</td>
+    </tr>
+  </tbody>
+</table>
+---
+
 ### Terminate a Process
 
 1. Find the process using specific port:
